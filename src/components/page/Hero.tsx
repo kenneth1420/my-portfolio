@@ -89,7 +89,7 @@ export default function Hero() {
           </h1>
 
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-1 h-0.5 bg-[#D4AF37] rounded-full" />
+            <div className="w-10 h-0.5 bg-gold rounded-full" />
             <span className="text-text-dim font-body font-light text-lg tracking-wide">
               <BlurText text="Full Stack Developer" delay={100} />
             </span>
@@ -176,7 +176,7 @@ export default function Hero() {
                 priority
               />
             </div>
-            <div className="bg-[#ffff] absolute -bottom-4 -right-4 bg-card border border-border rounded-2xl px-4 py-3 shadow-xl">
+            <div className="absolute -bottom-4 -right-4 bg-card border border-border rounded-2xl px-4 py-3 shadow-xl">
               <p className="text-xs text-muted font-mono">Experience</p>
               <p className="text-xl font-display font-bold text-gold">6+</p>
               <p className="text-xs text-text-dim">Years</p>
