@@ -176,7 +176,7 @@ export default function Hero() {
                 priority
               />
             </div>
-            <div className="absolute -bottom-4 -right-4 bg-card border border-border rounded-2xl px-4 py-3 shadow-xl">
+            <div className="absolute -bottom-4 -right-4 bg-card border border-border rounded-2xl px-4 py-3 shadow-xl bg-white/10 dark:bg-black/20 backdrop-blur-md">
               <p className="text-xs text-muted font-mono">Experience</p>
               <p className="text-xl font-display font-bold text-gold">6+</p>
               <p className="text-xs text-text-dim">Years</p>
