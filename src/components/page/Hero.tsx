@@ -45,8 +45,6 @@ const techLogos = [
   },
   { node: <SiRedux />, title: "Redux", href: "https://redux.js.org" },
   { node: <SiMobx />, title: "MobX", href: "https://mobx.js.org" },
-
-  // Zustand — no SI icon available, use text fallback
   {
     node: <span className="text-xs font-bold font-mono">ZST</span>,
     title: "Zustand",
@@ -55,12 +53,16 @@ const techLogos = [
 ];
 
 export default function Hero() {
-  console.log(avatarImage);
-
   return (
     <section className="relative min-h-screen flex items-center pt-20 pb-10 px-6 overflow-hidden">
-      <Aurora />
-
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Aurora
+          colorStops={["#66c4ff", "#B19EEF", "#5227FF"]}
+          blend={1}
+          amplitude={1.0}
+          speed={1}
+        />
+      </div>
       <div className="absolute right-8 top-1/2 -translate-y-1/2 hidden xl:flex flex-col items-center gap-4">
         <div className="w-px h-24 bg-gradient-to-b from-transparent to-border" />
         <span
@@ -71,7 +73,6 @@ export default function Hero() {
         </span>
         <div className="w-px h-24 bg-gradient-to-b from-border to-transparent" />
       </div>
-
       <div className="max-w-6xl mx-auto w-full grid lg:grid-cols-2 gap-12 lg:gap-20 items-center relative z-10">
         <div>
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-subtle border border-border text-gold text-xs font-mono tracking-wider mb-8">
@@ -131,10 +132,7 @@ export default function Hero() {
             </a>
           </div>
 
-          <div
-            className="flex items-center gap-5"
-            style={{ animation: "fadeUp 0.6s ease 1.1s forwards", opacity: 0 }}
-          >
+          <div className="flex items-center gap-5">
             <a
               href="https://www.linkedin.com/in/kenneth-lariosa-dev"
               target="_blank"
@@ -186,7 +184,6 @@ export default function Hero() {
           </div>
         </div>
       </div>
-
       <a
         href="#about"
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted hover:text-gold transition-colors"
