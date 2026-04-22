@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef } from "react";
 import { Renderer, Program, Mesh, Color, Triangle } from "ogl";
 
@@ -188,10 +190,9 @@ export default function Aurora(props: AuroraProps) {
         program.uniforms.uAmplitude.value = propsRef.current.amplitude ?? 1.0;
         program.uniforms.uBlend.value = propsRef.current.blend ?? blend;
         const stops = propsRef.current.colorStops ?? colorStops;
-        program.uniforms.uColorStops.value = stops.map((hex: string) => {
-          const c = new Color(hex);
-          return [c.r, c.g, c.b];
-        });
+
+        program.uniforms.uColorStops.value = parsedStops.current;
+
         renderer.render({ scene: mesh });
       }
     };
@@ -208,6 +209,15 @@ export default function Aurora(props: AuroraProps) {
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
   }, [amplitude]);
+
+  const parsedStops = useRef<number[][]>([]);
+
+  useEffect(() => {
+    parsedStops.current = colorStops.map((hex) => {
+      const c = new Color(hex);
+      return [c.r, c.g, c.b];
+    });
+  }, [colorStops]);
 
   return <div ref={ctnDom} className="w-full h-full" />;
 }
