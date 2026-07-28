@@ -1,58 +1,36 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Calendar } from "lucide-react";
+import { projects } from "@/src/data/resume";
 
-const projects = [
-  {
-    title: "Reading App for Children",
-    period: "Jan 2024 – Mar 2024",
-    description:
-      "Interactive reading application designed to improve early learning engagement with fun, child-friendly UI and gamified content.",
-    tags: ["Mobile", "React Native", "Education"],
-  },
-  {
-    title: "Chess Voice Recognition App",
-    period: "Feb 2023 – Apr 2023",
-    description:
-      "Mobile chess game with voice command integration, enabling users to control gameplay hands-free using natural speech.",
-    tags: ["Mobile", "Voice AI", "Game"],
-  },
-  {
-    title: "Technician App & Web Platform",
-    period: "Jan 2023 – Apr 2024",
-    description:
-      "Full-stack platform for job assignments, field technician tracking, and reporting — mobile app for technicians and web dashboard for managers.",
-    tags: ["Full Stack", "React", "ASP.NET"],
-  },
-  {
-    title: "Clinic Finder Web Application",
-    period: "Jan 2021 – Feb 2021",
-    description:
-      "Web app helping users discover nearby clinics and book appointments online with real-time reservation management.",
-    tags: ["Web App", "React", "Booking System"],
-  },
-  {
-    title: "Census Web Application",
-    period: "Aug 2020 – Sep 2020",
-    description:
-      "Data collection and statistical reporting system to support census operations with structured data entry and export.",
-    tags: ["Web App", "Data", "Reporting"],
-  },
-];
+
+const ALL = "All";
 
 export default function Projects() {
   const ref = useRef<HTMLElement>(null);
+  const [revealed, setRevealed] = useState(false);
+  const [activeCompany, setActiveCompany] = useState<string>(ALL);
+
+  const filters = useMemo(() => {
+    const counts = new Map<string, number>();
+    projects.forEach((p) => counts.set(p.company, (counts.get(p.company) ?? 0) + 1));
+    return [
+      { label: ALL, count: projects.length },
+      ...[...counts.entries()].map(([label, count]) => ({ label, count })),
+    ];
+  }, []);
+
+  const visibleProjects =
+    activeCompany === ALL
+      ? projects
+      : projects.filter((p) => p.company === activeCompany);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target
-              .querySelectorAll(".section-reveal")
-              .forEach((el) => el.classList.add("visible"));
-          }
+          if (entry.isIntersecting) setRevealed(true);
         });
       },
       { threshold: 0.05 }
@@ -61,29 +39,55 @@ export default function Projects() {
     return () => observer.disconnect();
   }, []);
 
+  const reveal = `section-reveal${revealed ? " visible" : ""}`;
+
   return (
     <section id="projects" ref={ref} className="py-24 px-6 bg-surface/50">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="section-reveal mb-16">
+        <div className={`${reveal} mb-10`}>
           <p className="text-gold font-mono text-sm tracking-widest mb-3">
             04. PROJECTS
           </p>
           <h2 className="font-display text-4xl md:text-5xl font-bold text-text">
-            Freelance Work
+            Selected Work
           </h2>
           <p className="text-text-dim mt-4 max-w-xl">
-            Selected freelance projects built alongside full-time roles,
-            spanning mobile, web, and specialized applications.
+            {projects.length} projects delivered across enterprise, startup, and
+            freelance engagements — spanning ERP, CRM, healthcare, mobile, and
+            specialized applications.
           </p>
         </div>
 
+        {/* Filters */}
+        <div className={`${reveal} flex flex-wrap gap-2 mb-10`}>
+          {filters.map((filter) => {
+            const isActive = filter.label === activeCompany;
+            return (
+              <button
+                key={filter.label}
+                type="button"
+                onClick={() => setActiveCompany(filter.label)}
+                aria-pressed={isActive}
+                className={`px-3.5 py-1.5 rounded-lg border text-xs font-mono transition-colors duration-200 ${
+                  isActive
+                    ? "bg-gold/10 border-gold/40 text-gold"
+                    : "bg-subtle border-border text-text-dim hover:border-gold/40 hover:text-gold"
+                }`}
+              >
+                {filter.label}
+                <span className="ml-1.5 text-muted">{filter.count}</span>
+              </button>
+            );
+          })}
+        </div>
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {projects.map((project, i) => (
+          {visibleProjects.map((project, i) => (
             <div
               key={project.title}
-              className="section-reveal hover-card bg-card border border-border rounded-2xl p-6 flex flex-col gap-4"
-              style={{ transitionDelay: `${i * 0.08}s` }}
+              className={`${reveal} hover-card bg-card border border-border rounded-2xl p-6 flex flex-col gap-4`}
+              style={{ transitionDelay: `${i * 0.05}s` }}
             >
               {/* Period */}
               <div className="flex items-center gap-2 text-muted text-xs font-mono">
@@ -95,6 +99,11 @@ export default function Projects() {
               <h3 className="font-display text-lg font-semibold text-text leading-snug">
                 {project.title}
               </h3>
+
+              {/* Company */}
+              <p className="text-gold text-xs font-medium -mt-2">
+                {project.company}
+              </p>
 
               {/* Description */}
               <p className="text-text-dim text-sm leading-relaxed flex-1">

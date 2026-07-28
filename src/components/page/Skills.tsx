@@ -2,46 +2,8 @@
 
 import ScrollReveal from "../ui/ScrollReveal";
 import SpotlightCard from "../ui/SpotlightCard";
+import { skillGroups } from "@/src/data/resume";
 
-const skillGroups = [
-  {
-    category: "Languages & Frameworks",
-    icon: "⟨/⟩",
-    skills: [
-      "C#",
-      "ASP.NET",
-      "ASP.NET Core",
-      "JavaScript",
-      "TypeScript",
-      "React JS",
-      "React Native",
-      "jQuery",
-    ],
-  },
-  {
-    category: "Web & Styling",
-    icon: "◈",
-    skills: [
-      "HTML5",
-      "CSS3",
-      "Bootstrap",
-      "Tailwind CSS",
-      "Styled Components",
-      "Material UI",
-      "Ant Design",
-    ],
-  },
-  {
-    category: "Databases",
-    icon: "⬡",
-    skills: ["MSSQL", "MySQL", "PostgreSQL"],
-  },
-  {
-    category: "Tools & Platforms",
-    icon: "⚙",
-    skills: ["Git", "Firebase"],
-  },
-];
 
 export default function Skills() {
   return (

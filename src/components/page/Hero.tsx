@@ -7,8 +7,10 @@ import ShinyText from "../ui/ShinyText";
 import avatarImage from "../../assets/avatar-profile.jpg";
 import HeroTechLogo from "./hero/HeroTechLogo";
 
-import { ArrowDown, Mail, Phone, Link } from "lucide-react";
+import NextLink from "next/link";
+import { ArrowDown, Download, FileText, Mail, Phone, Link } from "lucide-react";
 import { useIsMobile } from "@/src/hook/use.mobile.hook";
+import { site } from "@/src/data/site";
 
 export default function Hero() {
   const isMobile = useIsMobile();
@@ -57,6 +59,24 @@ export default function Hero() {
           </p>
 
           <HeroTechLogo />
+
+          <div className="flex flex-wrap items-center gap-3 mb-8">
+            <a
+              href={site.resumePath}
+              download
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gold text-ink font-semibold text-sm hover:bg-gold-light transition-colors duration-200 shadow-lg shadow-gold/20"
+            >
+              <Download size={15} />
+              Download Resume
+            </a>
+            <NextLink
+              href="/resume"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-gold/40 text-gold font-medium text-sm hover:bg-gold/10 transition-colors duration-200"
+            >
+              <FileText size={15} />
+              View Resume
+            </NextLink>
+          </div>
 
           <div className="flex items-center gap-5">
             <a
@@ -117,7 +137,7 @@ export default function Hero() {
                 Experience
               </p>
               <p className="text-lg md:text-xl font-display font-bold text-gold">
-                6+
+                7+
               </p>
               <p className="text-[10px] md:text-xs text-text-dim">Years</p>
             </div>

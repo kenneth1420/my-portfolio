@@ -1,13 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { FileText, Menu, X } from "lucide-react";
+import { site } from "@/src/data/site";
 
 const navLinks = [
   { href: "#about", label: "About" },
   { href: "#skills", label: "Skills" },
   { href: "#experience", label: "Experience" },
   { href: "#projects", label: "Projects" },
+  { href: "/resume", label: "Resume" },
   { href: "#contact", label: "Contact" },
 ];
 
@@ -52,12 +54,22 @@ export default function Navbar() {
         </ul>
 
         {/* CTA */}
-        <a
-          href="#contact"
-          className="hidden md:inline-flex items-center gap-2 px-5 py-2 rounded-full border border-gold/40 text-gold text-sm font-medium hover:bg-gold/10 transition-all duration-200"
-        >
-          Hire Me
-        </a>
+        <div className="hidden md:flex items-center gap-3">
+          <a
+            href={site.resumePath}
+            download
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold text-ink text-sm font-semibold hover:bg-gold-light transition-all duration-200 shadow-lg shadow-gold/20"
+          >
+            <FileText size={14} />
+            Resume
+          </a>
+          <a
+            href="#contact"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-gold/40 text-gold text-sm font-medium hover:bg-gold/10 transition-all duration-200"
+          >
+            Hire Me
+          </a>
+        </div>
 
         {/* Mobile toggle */}
         <button
@@ -84,7 +96,16 @@ export default function Navbar() {
                 </a>
               </li>
             ))}
-            <li>
+            <li className="flex flex-wrap gap-3 pt-1">
+              <a
+                href={site.resumePath}
+                download
+                onClick={() => setMenuOpen(false)}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold text-ink text-sm font-semibold hover:bg-gold-light transition-all duration-200"
+              >
+                <FileText size={14} />
+                Resume
+              </a>
               <a
                 href="#contact"
                 onClick={() => setMenuOpen(false)}

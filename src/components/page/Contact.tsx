@@ -1,32 +1,34 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Mail, Phone, MapPin, Send } from "lucide-react";
+import Link from "next/link";
+import { Download, FileText, Mail, Phone, MapPin, Send } from "lucide-react";
 import { FaLinkedin } from "react-icons/fa";
+import { site } from "@/src/data/site";
 
 const contactLinks = [
   {
     icon: Mail,
     label: "Email",
-    value: "kennethlariosa14@gmail.com",
-    href: "mailto:kennethlariosa14@gmail.com",
+    value: site.email,
+    href: `mailto:${site.email}`,
   },
   {
     icon: Phone,
     label: "Phone",
-    value: "+63 946 036 4852",
-    href: "tel:+639460364852",
+    value: site.phone,
+    href: site.phoneHref,
   },
   {
     icon: FaLinkedin,
     label: "LinkedIn",
     value: "kenneth-lariosa-dev",
-    href: "https://www.linkedin.com/in/kenneth-lariosa-dev",
+    href: site.linkedin,
   },
   {
     icon: MapPin,
     label: "Location",
-    value: "Davao City, Philippines",
+    value: site.location.label,
     href: "#",
   },
 ];
@@ -66,6 +68,29 @@ export default function Contact() {
             Open to new opportunities, collaborations, or just a good
             conversation about tech. Reach out anytime.
           </p>
+
+          {/* Availability + resume CTA */}
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-subtle border border-border text-gold text-xs font-mono tracking-wider">
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              Available for opportunities
+            </span>
+            <a
+              href={site.resumePath}
+              download
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gold text-ink font-semibold text-sm hover:bg-gold-light transition-colors duration-200 shadow-lg shadow-gold/20"
+            >
+              <Download size={14} />
+              Download Resume
+            </a>
+            <Link
+              href="/resume"
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-gold/40 text-gold font-medium text-sm hover:bg-gold/10 transition-colors duration-200"
+            >
+              <FileText size={14} />
+              View Resume
+            </Link>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12">

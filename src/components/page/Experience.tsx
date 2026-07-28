@@ -2,58 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { MapPin } from "lucide-react";
+import { experiences } from "@/src/data/resume";
 
-const experiences = [
-  {
-    role: "Senior Computer Services Programmer",
-    company: "Davao City Water District",
-    period: "Dec 2021 – Present",
-    location: "Davao City, Philippines",
-    highlights: [
-      "Developed and maintained an Attendance Recording System, improving accuracy and automating daily attendance tracking.",
-      "Built a CRM system for both customers and agents, enhancing service efficiency and user experience.",
-      "Developed a Document Tracking System to streamline document flow and improve processing time.",
-      "Created an ERP HR Attendance module that supported employee management and HR workflows.",
-      "Built an App Management platform used for internal applications and administrative tasks.",
-    ],
-    current: true,
-  },
-  {
-    role: "Senior Fullstack Developer",
-    company: "Aquila",
-    period: "Nov 2019 – Jul 2022",
-    location: "Davao City, Philippines",
-    highlights: [
-      "Developed modules and features for the Aquila Clinic Management System, supporting patient records, scheduling, and clinic operations.",
-      "Implemented frontend interfaces and backend APIs to improve workflow efficiency.",
-    ],
-    current: false,
-  },
-  {
-    role: "Front End and Mobile Developer",
-    company: "The Guild Ltd.",
-    period: "Jan 2021 – Oct 2021",
-    location: "Davao City, Philippines",
-    highlights: [
-      "Developed the Mentor Mobile App, improving accessibility and user engagement.",
-      "Built the Admin Portal for monitoring and managing mentorship activities.",
-    ],
-    current: false,
-  },
-  {
-    role: "Full Stack Developer",
-    company: "Iekzeed Software Development Co.",
-    period: "Aug 2018 – Feb 2020",
-    location: "Davao City, Philippines",
-    highlights: [
-      "Developed Akruals ERP Software modules including accounting, inventory, and reporting features.",
-      "Built a CCTV Monitoring Web Application, enabling real-time monitoring and centralized management.",
-      "Developed JCI CMS Web Application supporting content publishing and organizational workflows.",
-      "Created and maintained the Iekzeed Company Website, improving brand visibility and client reach.",
-    ],
-    current: false,
-  },
-];
 
 export default function Experience() {
   const ref = useRef<HTMLElement>(null);

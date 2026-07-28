@@ -2,42 +2,47 @@
 
 import { useEffect, useState } from "react";
 
+/**
+ * Renders children immediately so the page is present in the server-rendered
+ * HTML for crawlers, ATS scrapers, and link previews. The splash is a purely
+ * decorative overlay that fades away once hydrated — it never gates content.
+ */
 export default function PageLoader({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const [loading, setLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-
-    const timer = setTimeout(() => setLoading(false), 1200);
+    const timer = setTimeout(() => setLoading(false), 700);
     return () => clearTimeout(timer);
   }, []);
 
-  if (!mounted) {
-    return null;
-  }
+  return (
+    <>
+      {children}
 
-  if (loading) {
-    return (
       <div
-        className="
-          fixed inset-0 z-50 flex items-center justify-center
-            bg-[var(--background)] text-[var(--foreground)]
-        "
+        aria-hidden="true"
+        className={`
+          fixed inset-0 z-100 flex items-center justify-center
+          bg-background text-foreground
+          transition-opacity duration-500
+          motion-reduce:transition-none
+          ${loading ? "opacity-100" : "opacity-0 pointer-events-none"}
+        `}
       >
         <div className="flex flex-col items-center gap-4">
           <div
             className="
-                w-10 h-10
-                border-4
-                border-[var(--foreground)]
-                border-t-transparent
-                rounded-full
-                animate-spin
+              w-10 h-10
+              border-4
+              border-foreground
+              border-t-transparent
+              rounded-full
+              animate-spin
+              motion-reduce:animate-none
             "
           />
 
@@ -46,8 +51,6 @@ export default function PageLoader({
           </p>
         </div>
       </div>
-    );
-  }
-
-  return <>{children}</>;
+    </>
+  );
 }

@@ -2,10 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import { MapPin, GraduationCap, Building } from "lucide-react";
+import { education } from "@/src/data/resume";
 
 const stats = [
-  { value: "6+", label: "Years Experience" },
-  { value: "15+", label: "Projects Delivered" },
+  { value: "7+", label: "Years Experience" },
+  { value: "17", label: "Projects Delivered" },
   { value: "5", label: "Companies Served" },
   { value: "3", label: "Tech Stacks" },
 ];
@@ -68,15 +69,15 @@ export default function About() {
               <div className="flex items-center gap-3 text-text-dim">
                 <GraduationCap size={15} className="text-gold flex-shrink-0" />
                 <span>
-                  BS Computer Science &mdash; Christian Colleges of Southeast
-                  Asia (2014–2018)
+                  BS Computer Science &mdash; {education[0].school} (
+                  {education[0].period})
                 </span>
               </div>
               <div className="flex items-center gap-3 text-text-dim">
                 <Building size={15} className="text-gold flex-shrink-0" />
                 <span>
-                  Currently: Senior Computer Services Programmer @ Davao City
-                  Water District
+                  Currently: Full Stack Software Engineer @ Davao City Water
+                  District
                 </span>
               </div>
             </div>

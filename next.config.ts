@@ -6,6 +6,9 @@ const withBundleAnalyzer = bundleAnalyzer({
 });
 
 const nextConfig: NextConfig = {
+  // Emits .next/standalone with only the traced runtime files, for the Docker image.
+  output: "standalone",
+
   experimental: {
     optimizePackageImports: [
       "lucide-react",
