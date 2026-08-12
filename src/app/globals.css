@@ -52,10 +52,21 @@
      A light-mode star also has to be darker than its background to register at
      all, so this is a deep bronze at high alpha rather than a pale gold. */
   --star: rgba(146, 112, 30, 0.85);
-  --star-glow: rgba(196, 158, 48, 0.55);
-  --nebula: rgba(212, 175, 55, 0.13);
-  --sky-top: rgba(212, 175, 55, 0.11);
-  --sky-bottom: rgba(104, 98, 78, 0.09);
+  /* The discrete blinking stars and meteor heads, kept separate from the
+     ambient tiled planes above: they are larger and carry the motion, so they
+     need real contrast. At 0.85 alpha the gold above composites to only
+     3.5:1 on white — this lands near 9.8:1 while staying in the gold family. */
+  --star-bright: rgba(58, 46, 18, 0.9);
+  /* Barely there. A chart has hard-edged marks, and any halo on white softens
+     the dot back toward the page rather than reinforcing it. */
+  --star-glow: rgba(120, 96, 30, 0.15);
+  --constellation: rgba(146, 112, 30, 0.28);
+  /* Blurred blobs are nebulae against black and stains against white, so light
+     mode keeps only a trace and lets the paper wash carry the warmth. */
+  --nebula: rgba(212, 175, 55, 0.05);
+  --sky-base: rgba(214, 196, 158, 0.22);
+  --sky-top: rgba(212, 175, 55, 0.1);
+  --sky-bottom: rgba(104, 98, 78, 0.08);
 }
 
 .dark {
@@ -76,8 +87,11 @@
      entirely here and the nebula keeps its original strength — light mode is
      the only thing these tokens change. */
   --star: rgba(255, 255, 255, 0.85);
+  --star-bright: rgba(255, 255, 255, 0.95);
   --star-glow: rgba(255, 255, 255, 0.5);
+  --constellation: rgba(255, 255, 255, 0.16);
   --nebula: rgba(212, 175, 55, 0.06);
+  --sky-base: transparent;
   --sky-top: transparent;
   --sky-bottom: transparent;
 }
@@ -368,12 +382,38 @@ body {
   }
   50% {
     opacity: 1;
-    transform: scale(1);
+    /* Swelling slightly past full size makes the twinkle readable at 2-4px,
+       where a pure opacity fade is too subtle to notice. */
+    transform: scale(1.1);
   }
 }
 
 @utility animate-blink {
   animation: star-blink var(--blink-duration, 4s) ease-in-out infinite;
+}
+
+/* Constellation vertices pulse on their own terms: they never fade far, since
+   a joint that disappears while its lines stay solid makes the figure look
+   broken rather than twinkling. */
+@keyframes mark-blink {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+}
+
+@utility animate-mark-blink {
+  /* An SVG shape needs an explicit reference box. Without one, scale() resolves
+     against the SVG's origin and hurls each circle across the canvas instead of
+     swelling it where it sits. */
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: mark-blink var(--blink-duration, 6s) ease-in-out infinite;
 }
 
 /* A meteor is visible for only the first ~25% of its cycle and idles unseen for
@@ -414,6 +454,7 @@ body {
   .animate-orbit,
   .animate-depth-drift,
   .animate-blink,
+  .animate-mark-blink,
   .animate-meteor {
     animation: none;
   }

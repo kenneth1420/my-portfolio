@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react";
 import BlinkingStars from "./BlinkingStars";
+import Constellations from "./Constellations";
 import Meteors from "./Meteors";
 import { usePointerParallax } from "@/src/hook/use.pointer.parallax.hook";
 import { useScrollMetrics } from "@/src/hook/use.scroll.metrics.hook";
@@ -36,6 +37,9 @@ export default function DepthBackground() {
       <div
         className="absolute inset-0"
         style={{
+          // The flat base is the paper tone; the gradient is the sky over it.
+          // Both resolve to transparent in dark mode, leaving that theme alone.
+          backgroundColor: "var(--sky-base)",
           backgroundImage:
             "linear-gradient(to bottom, var(--sky-top), transparent 45%, var(--sky-bottom))",
         }}
@@ -119,6 +123,18 @@ export default function DepthBackground() {
           <BlinkingStars />
         </div>
 
+        {/* Constellation geometry, one plane nearer than the blinking stars.
+            Static on purpose — these lead the composition, the blinking stars
+            supply the motion. */}
+        <div
+          className="scroll-depth absolute inset-0"
+          style={
+            { "--travel": "110px", "--pointer-shift": "24px" } as CSSProperties
+          }
+        >
+          <Constellations />
+        </div>
+
         {/* Meteors stay unparallaxed — they are transient and fast, so shifting
             them with the cursor would read as noise rather than depth. */}
         <Meteors />
@@ -127,7 +143,7 @@ export default function DepthBackground() {
       {/* Atmosphere: a wide, shallow glow hugging the bottom edge, standing in
           for a horizon so the starfield has something to sit above. Deliberately
           fixed — a horizon that slid with the cursor would break the illusion. */}
-      <div className="absolute -bottom-40 left-1/2 -translate-x-1/2 w-[140%] h-80 rounded-[50%] bg-gold/12 dark:bg-gold/8 blur-[90px]" />
+      <div className="absolute -bottom-40 left-1/2 -translate-x-1/2 w-[140%] h-80 rounded-[50%] bg-gold/5 dark:bg-gold/8 blur-[90px]" />
     </div>
   );
 }

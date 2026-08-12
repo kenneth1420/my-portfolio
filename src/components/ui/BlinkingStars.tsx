@@ -2,51 +2,79 @@
 
 import type { CSSProperties } from "react";
 
-/**
- * Fixed rather than random: a generated set would differ between the server and
- * the client render and trip a hydration mismatch.
- *
- * Positions are weighted toward the edges and the upper band, keeping the
- * central column — where the headings and body copy sit — clear.
- */
-const STARS = [
-  { top: "8%", left: "6%", size: 2, duration: "4.2s", delay: "0s" },
-  { top: "17%", left: "88%", size: 2.5, duration: "5.6s", delay: "1.4s" },
-  { top: "12%", left: "72%", size: 1.5, duration: "3.4s", delay: "2.1s" },
-  { top: "31%", left: "14%", size: 2, duration: "6.5s", delay: "0.7s" },
-  { top: "26%", left: "94%", size: 1.5, duration: "2.8s", delay: "3.2s" },
-  { top: "48%", left: "4%", size: 2.5, duration: "5.1s", delay: "2.6s" },
-  { top: "57%", left: "91%", size: 2, duration: "3.9s", delay: "0.4s" },
-  { top: "69%", left: "11%", size: 1.5, duration: "4.7s", delay: "3.8s" },
-  { top: "78%", left: "82%", size: 2, duration: "6.1s", delay: "1.1s" },
-  { top: "88%", left: "23%", size: 2.5, duration: "3.6s", delay: "2.9s" },
-];
+/** How many stars blink. The single knob for how busy the sky feels. */
+const STAR_COUNT = 32;
+
+/** Column, in percent, kept clear of stars — the headings and body copy sit here. */
+const TEXT_COLUMN = { from: 42, to: 58 };
 
 /**
- * A sparse set of stars that blink independently, layered over the tiled
- * starfields. Ten elements is cheap enough to animate individually, which the
- * gradient-tiled planes cannot do.
+ * A seeded generator, never `Math.random()`: the sequence has to come out
+ * identical on the server and in the browser or the two renders disagree and
+ * React reports a hydration mismatch. A fixed seed gives a fresh-looking
+ * scatter that is nonetheless the same every time.
+ */
+function createRandom(seed: number) {
+  let state = seed;
+
+  return () => {
+    state = (state * 1664525 + 1013904223) % 4294967296;
+    return state / 4294967296;
+  };
+}
+
+const STARS = (() => {
+  const random = createRandom(20260812);
+
+  return Array.from({ length: STAR_COUNT }, (_, index) => {
+    const side = random();
+    const spread = random();
+
+    // Map into the two bands either side of the text column rather than
+    // rejecting samples, so the count stays exact.
+    const left =
+      side < 0.5
+        ? 2 + spread * (TEXT_COLUMN.from - 2)
+        : TEXT_COLUMN.to + spread * (98 - TEXT_COLUMN.to);
+
+    return {
+      id: index,
+      left: `${left.toFixed(2)}%`,
+      top: `${(2 + random() * 96).toFixed(2)}%`,
+      // A wide spread of weights is what reads as a star chart; a uniform size
+      // reads as a dot pattern.
+      size: Number((1.6 + random() * 2.8).toFixed(2)),
+      duration: `${(2.6 + random() * 4).toFixed(2)}s`,
+      delay: `${(random() * 7).toFixed(2)}s`,
+    };
+  });
+})();
+
+/**
+ * A field of stars blinking on independent schedules, layered over the tiled
+ * starfields — which cannot blink individually, being a single background
+ * image each.
  *
  * The static `opacity-60` is what reduced-motion users see once the blink is
- * switched off — plain stars rather than stars frozen mid-fade.
+ * switched off: plain stars rather than stars frozen mid-fade.
  */
 export default function BlinkingStars() {
   return (
     <>
       {STARS.map((star) => (
         <span
-          key={`${star.top}-${star.left}`}
-          className="animate-blink absolute rounded-full bg-(--star) opacity-60"
+          key={star.id}
+          className="animate-blink absolute rounded-full bg-(--star-bright) opacity-60"
           style={
             {
               top: star.top,
               left: star.left,
               width: `${star.size}px`,
               height: `${star.size}px`,
-              // The halo is what makes a point read as emitting light rather
-              // than as a speck sitting on the page — which is the difference
-              // between a star and a smudge on a light background.
-              boxShadow: `0 0 ${star.size * 3}px ${star.size / 2}px var(--star-glow)`,
+              // The halo reinforces the dot's edge. Its colour flips per theme:
+              // a light bloom against the night sky, a soft dark shadow on a
+              // white page, where a bloom would wash the star out instead.
+              boxShadow: `0 0 ${star.size * 3.5}px ${star.size / 2}px var(--star-glow)`,
               "--blink-duration": star.duration,
               animationDelay: star.delay,
             } as CSSProperties

@@ -74,7 +74,7 @@ export default function Meteors() {
             }
           >
             {/* The head, at the leading edge of the tail. */}
-            <span className="absolute -right-px -top-px h-[3px] w-[3px] rounded-full bg-(--star) shadow-[0_0_7px_2px_var(--star-glow)]" />
+            <span className="absolute -right-px -top-px h-[3px] w-[3px] rounded-full bg-(--star-bright) shadow-[0_0_7px_2px_var(--star-glow)]" />
           </span>
         </span>
       ))}
