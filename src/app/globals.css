@@ -39,9 +39,23 @@
   --text: #171717;
   --text-dim: #555555;
   --subtle: #f5f5f5;
-  /* Starfield ink. A literal white/black starfield would either vanish or
-     read as dirt on a light page, so light mode gets a muted warm grey. */
-  --star: rgba(120, 113, 90, 0.55);
+
+  /* ── Space layer ──────────────────────────────────────────────────
+     Every tunable for the galaxy lives here and in the .dark block below.
+
+     Light mode is not an inverted night sky. Stars are bright points, so on
+     white there is nothing for them to be bright against and dark specks read
+     as dust. Three things fix that: a sky wash for them to sit on, a glow so
+     each point reads as emitting rather than deposited, and a gold tone that
+     keeps the field on the existing accent instead of adding a second hue.
+
+     A light-mode star also has to be darker than its background to register at
+     all, so this is a deep bronze at high alpha rather than a pale gold. */
+  --star: rgba(146, 112, 30, 0.85);
+  --star-glow: rgba(196, 158, 48, 0.55);
+  --nebula: rgba(212, 175, 55, 0.13);
+  --sky-top: rgba(212, 175, 55, 0.11);
+  --sky-bottom: rgba(104, 98, 78, 0.09);
 }
 
 .dark {
@@ -57,7 +71,15 @@
   --text: #ffffff;
   --text-dim: #999999;
   --subtle: #1a1a1a;
+
+  /* Dark already had a night sky to work with, so the wash is switched off
+     entirely here and the nebula keeps its original strength — light mode is
+     the only thing these tokens change. */
   --star: rgba(255, 255, 255, 0.85);
+  --star-glow: rgba(255, 255, 255, 0.5);
+  --nebula: rgba(212, 175, 55, 0.06);
+  --sky-top: transparent;
+  --sky-bottom: transparent;
 }
 
 body {
@@ -259,34 +281,41 @@ body {
    pairs it with its own --rate and --tile via `star-drift` below, so the three
    planes travel at very different speeds and wrap seamlessly. */
 
+/* Each star needs an explicit solid core. Written as `var(--star), transparent`
+   the colour ramps to nothing across the whole radius, leaving no fully opaque
+   pixel — the dot then paints at roughly a third of its nominal alpha, which
+   survives white-on-black but disappears entirely on a light page. The paired
+   stops below hold full colour to the first radius, then fade only far enough
+   to antialias the edge. */
+
 @utility starfield-far {
   background-image:
-    radial-gradient(1px 1px at 18px 32px, var(--star), transparent),
-    radial-gradient(1px 1px at 88px 12px, var(--star), transparent),
-    radial-gradient(1px 1px at 132px 74px, var(--star), transparent),
-    radial-gradient(1px 1px at 46px 108px, var(--star), transparent),
-    radial-gradient(1px 1px at 156px 140px, var(--star), transparent),
-    radial-gradient(1px 1px at 104px 168px, var(--star), transparent);
+    radial-gradient(circle at 18px 32px, var(--star) 0 0.9px, transparent 1.6px),
+    radial-gradient(circle at 88px 12px, var(--star) 0 0.9px, transparent 1.6px),
+    radial-gradient(circle at 132px 74px, var(--star) 0 0.9px, transparent 1.6px),
+    radial-gradient(circle at 46px 108px, var(--star) 0 0.9px, transparent 1.6px),
+    radial-gradient(circle at 156px 140px, var(--star) 0 0.9px, transparent 1.6px),
+    radial-gradient(circle at 104px 168px, var(--star) 0 0.9px, transparent 1.6px);
   background-size: 190px 190px;
   background-repeat: repeat;
 }
 
 @utility starfield-mid {
   background-image:
-    radial-gradient(1.5px 1.5px at 60px 40px, var(--star), transparent),
-    radial-gradient(1.5px 1.5px at 210px 96px, var(--star), transparent),
-    radial-gradient(1.5px 1.5px at 128px 190px, var(--star), transparent),
-    radial-gradient(1.5px 1.5px at 246px 214px, var(--star), transparent),
-    radial-gradient(1.5px 1.5px at 24px 152px, var(--star), transparent);
+    radial-gradient(circle at 60px 40px, var(--star) 0 1.2px, transparent 2px),
+    radial-gradient(circle at 210px 96px, var(--star) 0 1.2px, transparent 2px),
+    radial-gradient(circle at 128px 190px, var(--star) 0 1.2px, transparent 2px),
+    radial-gradient(circle at 246px 214px, var(--star) 0 1.2px, transparent 2px),
+    radial-gradient(circle at 24px 152px, var(--star) 0 1.2px, transparent 2px);
   background-size: 280px 280px;
   background-repeat: repeat;
 }
 
 @utility starfield-near {
   background-image:
-    radial-gradient(2px 2px at 120px 80px, var(--star), transparent),
-    radial-gradient(2px 2px at 330px 250px, var(--star), transparent),
-    radial-gradient(2.5px 2.5px at 220px 380px, var(--star), transparent);
+    radial-gradient(circle at 120px 80px, var(--star) 0 1.6px, transparent 2.6px),
+    radial-gradient(circle at 330px 250px, var(--star) 0 1.6px, transparent 2.6px),
+    radial-gradient(circle at 220px 380px, var(--star) 0 2px, transparent 3.1px);
   background-size: 420px 420px;
   background-repeat: repeat;
 }

@@ -30,6 +30,17 @@ export default function DepthBackground() {
       aria-hidden="true"
       className="fixed inset-0 -z-10 overflow-hidden pointer-events-none"
     >
+      {/* Sky wash. Gives the stars something to be bright against — without it
+          a light-mode starfield reads as dust on white paper. Both stops are
+          transparent in dark mode, so this layer is inert there. */}
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage:
+            "linear-gradient(to bottom, var(--sky-top), transparent 45%, var(--sky-bottom))",
+        }}
+      />
+
       <div ref={pointerRef} className="absolute inset-0">
         {/* Nebulae. The drift animation and the parallax each need their own
             element: both write `transform`, and an animation outranks a normal
@@ -39,7 +50,7 @@ export default function DepthBackground() {
           style={{ "--travel": "50px", "--pointer-shift": "20px" } as CSSProperties}
         >
           <div
-            className="animate-depth-drift w-152 h-152 rounded-full bg-gold/6 blur-[110px]"
+            className="animate-depth-drift w-152 h-152 rounded-full bg-(--nebula) blur-[110px]"
             style={{ "--drift-duration": "34s" } as CSSProperties}
           />
         </div>
@@ -48,7 +59,7 @@ export default function DepthBackground() {
           style={{ "--travel": "70px", "--pointer-shift": "28px" } as CSSProperties}
         >
           <div
-            className="animate-depth-drift w-128 h-128 rounded-full bg-gold/5 blur-[110px]"
+            className="animate-depth-drift w-128 h-128 rounded-full bg-(--nebula) opacity-85 blur-[110px]"
             style={
               {
                 "--drift-duration": "44s",
@@ -65,7 +76,7 @@ export default function DepthBackground() {
             Blinking is handled by discrete stars below rather than by pulsing a
             whole plane, which reads as the sky breathing rather than starlight. */}
         <div
-          className="starfield-far star-drift absolute -inset-y-48 inset-x-0 opacity-70"
+          className="starfield-far star-drift absolute -inset-y-48 inset-x-0 opacity-90 dark:opacity-45"
           style={
             {
               "--rate": "0.06",
@@ -75,7 +86,7 @@ export default function DepthBackground() {
           }
         />
         <div
-          className="starfield-mid star-drift absolute -inset-y-72 inset-x-0 opacity-80"
+          className="starfield-mid star-drift absolute -inset-y-72 inset-x-0 opacity-95 dark:opacity-50"
           style={
             {
               "--rate": "0.14",
@@ -85,7 +96,7 @@ export default function DepthBackground() {
           }
         />
         <div
-          className="starfield-near star-drift absolute -inset-y-112 inset-x-0"
+          className="starfield-near star-drift absolute -inset-y-112 inset-x-0 opacity-100 dark:opacity-60"
           style={
             {
               "--rate": "0.28",
@@ -116,7 +127,7 @@ export default function DepthBackground() {
       {/* Atmosphere: a wide, shallow glow hugging the bottom edge, standing in
           for a horizon so the starfield has something to sit above. Deliberately
           fixed — a horizon that slid with the cursor would break the illusion. */}
-      <div className="absolute -bottom-40 left-1/2 -translate-x-1/2 w-[140%] h-80 rounded-[50%] bg-gold/8 blur-[90px]" />
+      <div className="absolute -bottom-40 left-1/2 -translate-x-1/2 w-[140%] h-80 rounded-[50%] bg-gold/12 dark:bg-gold/8 blur-[90px]" />
     </div>
   );
 }

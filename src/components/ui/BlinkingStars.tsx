@@ -36,13 +36,17 @@ export default function BlinkingStars() {
       {STARS.map((star) => (
         <span
           key={`${star.top}-${star.left}`}
-          className="animate-blink absolute rounded-full bg-[var(--star)] opacity-60"
+          className="animate-blink absolute rounded-full bg-(--star) opacity-60"
           style={
             {
               top: star.top,
               left: star.left,
               width: `${star.size}px`,
               height: `${star.size}px`,
+              // The halo is what makes a point read as emitting light rather
+              // than as a speck sitting on the page — which is the difference
+              // between a star and a smudge on a light background.
+              boxShadow: `0 0 ${star.size * 3}px ${star.size / 2}px var(--star-glow)`,
               "--blink-duration": star.duration,
               animationDelay: star.delay,
             } as CSSProperties
