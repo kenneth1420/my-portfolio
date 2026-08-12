@@ -2,6 +2,7 @@
 
 import ScrollReveal from "../ui/ScrollReveal";
 import SpotlightCard from "../ui/SpotlightCard";
+import TiltCard from "../ui/TiltCard";
 import { skillGroups } from "@/src/data/resume";
 
 
@@ -20,27 +21,34 @@ export default function Skills() {
 
         <div className="grid md:grid-cols-2 gap-6">
           {skillGroups.map((group, i) => (
-            <ScrollReveal key={group.category} delay={i * 100}>
-              <SpotlightCard className="bg-card border border-border rounded-2xl p-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="font-mono text-gold text-lg">
-                    {group.icon}
-                  </span>
-                  <h3 className="font-display text-lg font-semibold text-text">
-                    {group.category}
-                  </h3>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {group.skills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="px-3 py-1.5 rounded-lg bg-subtle border border-border text-text-dim text-sm font-mono hover:border-gold/40 hover:text-gold transition-all duration-200 cursor-default"
-                    >
-                      {skill}
+            <ScrollReveal key={group.category} delay={i * 100} className="h-full">
+              {/* Chrome moves onto the tilting surface so the hover border and
+                  shadow travel with the tilt; SpotlightCard keeps the cursor light. */}
+              <TiltCard
+                className="bg-card border border-border rounded-2xl"
+                max={3}
+              >
+                <SpotlightCard className="h-full rounded-2xl p-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="font-mono text-gold text-lg">
+                      {group.icon}
                     </span>
-                  ))}
-                </div>
-              </SpotlightCard>
+                    <h3 className="font-display text-lg font-semibold text-text">
+                      {group.category}
+                    </h3>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {group.skills.map((skill) => (
+                      <span
+                        key={skill}
+                        className="px-3 py-1.5 rounded-lg bg-subtle border border-border text-text-dim text-sm font-mono hover:border-gold/40 hover:text-gold transition-all duration-200 cursor-default"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </SpotlightCard>
+              </TiltCard>
             </ScrollReveal>
           ))}
         </div>

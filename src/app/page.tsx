@@ -14,6 +14,9 @@ import { useWindowSize } from "../hook/use.window.size.hook";
 const SplashCursor = dynamic(() => import("../components/ui/SplashCursor"));
 const Hero = dynamic(() => import("../components/page/Hero"));
 const Navbar = dynamic(() => import("../components/page/Navbar"));
+const DepthBackground = dynamic(
+  () => import("../components/ui/DepthBackground"),
+);
 
 export default function Home() {
   const { width } = useWindowSize();
@@ -21,6 +24,10 @@ export default function Home() {
   return (
     <>
       <PageLoader>
+        {/* Sits under the mesh-bg gradients, which are transparent, so the two
+            layers read as one background with depth. CSS-only, so it is safe
+            to keep on mobile. */}
+        <DepthBackground />
         <div className="flex flex-col flex-1 min-h-screen mesh-bg font-body">
           <Navbar />
           <main className="flex flex-col flex-1 w-full">

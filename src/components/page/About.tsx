@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import type { CSSProperties } from "react";
 import { MapPin, GraduationCap, Building } from "lucide-react";
+import TiltCard from "../ui/TiltCard";
 import { education } from "@/src/data/resume";
 
 const stats = [
@@ -86,15 +88,21 @@ export default function About() {
           {/* Right – stats */}
           <div className="section-reveal grid grid-cols-2 gap-4">
             {stats.map((stat) => (
-              <div
+              <TiltCard
                 key={stat.label}
-                className="hover-card bg-card border border-border rounded-2xl p-6"
+                className="bg-card border border-border rounded-2xl p-6"
+                max={3}
               >
-                <p className="font-display text-4xl font-bold text-gold mb-1">
+                {/* The figure floats a little above the card face, so it
+                    parallaxes against the label as the card tilts. */}
+                <p
+                  className="depth-layer font-display text-4xl font-bold text-gold mb-1"
+                  style={{ "--depth": "20px" } as CSSProperties}
+                >
                   {stat.value}
                 </p>
                 <p className="text-text-dim text-sm">{stat.label}</p>
-              </div>
+              </TiltCard>
             ))}
           </div>
         </div>

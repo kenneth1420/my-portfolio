@@ -1,4 +1,5 @@
 "use client";
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import HeroAurora from "./hero/HeroAurora";
 import SplitText from "../ui/SplitText";
@@ -6,6 +7,8 @@ import BlurText from "../ui/BlurText";
 import ShinyText from "../ui/ShinyText";
 import avatarImage from "../../assets/avatar-profile.jpg";
 import HeroTechLogo from "./hero/HeroTechLogo";
+import HeroObject from "./hero/HeroObject";
+import { usePointerParallax } from "@/src/hook/use.pointer.parallax.hook";
 
 import NextLink from "next/link";
 import { ArrowDown, Download, FileText, Mail, Phone, Link } from "lucide-react";
@@ -14,6 +17,7 @@ import { site } from "@/src/data/site";
 
 export default function Hero() {
   const isMobile = useIsMobile();
+  const portraitRef = usePointerParallax<HTMLDivElement>();
 
   return (
     <section className="relative min-h-screen flex items-center pt-20 pb-10 px-6 overflow-hidden">
@@ -112,10 +116,21 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="relative flex justify-center lg:justify-end mt-12 lg:mt-0">
-          <div className="relative">
-            <div className="absolute -inset-4 rounded-full border border-gold/20 animate-float" />
-            <div className="absolute -inset-8 rounded-full border border-gold/10" />
+        <div className="perspective-card relative flex justify-center lg:justify-end mt-12 lg:mt-0">
+          {/* The whole portrait cluster is one 3D scene: the rig sits behind the
+              photo and the stat badge floats in front, so cursor movement pulls
+              them across each other instead of sliding the group as a slab. */}
+          <div
+            ref={portraitRef}
+            className="parallax-scene relative"
+            style={
+              {
+                "--parallax-shift": "10px",
+                "--parallax-tilt": "5deg",
+              } as CSSProperties
+            }
+          >
+            <HeroObject />
 
             <div className="absolute -top-2 -right-2 w-6 h-6 md:w-8 md:h-8 border-t-2 border-r-2 border-gold rounded-tr-lg" />
             <div className="absolute -bottom-2 -left-2 w-6 h-6 md:w-8 md:h-8 border-b-2 border-l-2 border-gold rounded-bl-lg" />
@@ -132,7 +147,10 @@ export default function Hero() {
               />
             </div>
 
-            <div className="absolute -bottom-4 -right-4 sm:-bottom-4 sm:-right-4 md:-bottom-6 md:-right-6 bg-white/10 dark:bg-black/20 backdrop-blur-md border border-border rounded-2xl px-3 py-2 md:px-4 md:py-3 shadow-xl">
+            <div
+              className="depth-layer absolute -bottom-4 -right-4 sm:-bottom-4 sm:-right-4 md:-bottom-6 md:-right-6 bg-white/10 dark:bg-black/20 backdrop-blur-md border border-border rounded-2xl px-3 py-2 md:px-4 md:py-3 shadow-xl"
+              style={{ "--depth": "55px" } as CSSProperties}
+            >
               <p className="text-[10px] md:text-xs text-muted font-mono">
                 Experience
               </p>

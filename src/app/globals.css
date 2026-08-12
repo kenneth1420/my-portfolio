@@ -39,6 +39,9 @@
   --text: #171717;
   --text-dim: #555555;
   --subtle: #f5f5f5;
+  /* Starfield ink. A literal white/black starfield would either vanish or
+     read as dirt on a light page, so light mode gets a muted warm grey. */
+  --star: rgba(120, 113, 90, 0.55);
 }
 
 .dark {
@@ -54,6 +57,7 @@
   --text: #ffffff;
   --text-dim: #999999;
   --subtle: #1a1a1a;
+  --star: rgba(255, 255, 255, 0.85);
 }
 
 body {
@@ -78,14 +82,18 @@ body {
 
 @utility hover-card {
   transition:
-    transform 0.25s ease,
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
     border-color 0.25s ease,
-    box-shadow 0.25s ease;
+    box-shadow 0.3s ease;
 
   &:hover {
-    transform: translateY(-4px);
+    transform: translateY(-5px);
     border-color: color-mix(in oklab, var(--gold) 40%, transparent);
-    box-shadow: 0 12px 32px -12px color-mix(in oklab, var(--gold) 25%, transparent);
+    /* Two stops: a tight contact shadow keeps the card anchored while the
+       wide one reads as distance from the page. */
+    box-shadow:
+      0 2px 6px -2px color-mix(in oklab, var(--gold) 12%, transparent),
+      0 16px 36px -16px color-mix(in oklab, var(--gold) 30%, transparent);
   }
 }
 
@@ -129,6 +137,242 @@ body {
   animation: float 6s ease-in-out infinite;
 }
 
+/* ─────────────────────────────────────────────────────────────────────
+   3D depth system
+
+   `use.tilt.hook` writes --tilt-x / --tilt-y as CSS custom properties
+   inside rAF, so tracking the cursor never re-renders React — the
+   compositor does all the work. Every effect below collapses to flat
+   for touch pointers and reduced-motion users.
+   ───────────────────────────────────────────────────────────────────── */
+
+/* Perspective host. Deliberately applies no transform of its own, so it
+   never becomes the containing block for a fixed-position descendant. */
+@utility perspective-card {
+  perspective: 900px;
+}
+
+@utility tilt-surface {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  --tilt-lift: 0px;
+  transform-style: preserve-3d;
+  transform: translate3d(0, var(--tilt-lift), 0) rotateX(var(--tilt-x))
+    rotateY(var(--tilt-y));
+  transition:
+    transform 450ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 450ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 250ms ease;
+}
+
+/* Lifts inner content off the card face so it parallaxes against it. */
+@utility depth-layer {
+  transform: translateZ(var(--depth, 24px));
+  transform-style: preserve-3d;
+}
+
+/* Cursor parallax. `use.pointer.parallax.hook` only writes --px / --py; the
+   transform is expressed here so the reduced-motion and touch rules below
+   are the single authority on whether it moves at all. */
+@utility parallax-scene {
+  --px: 0;
+  --py: 0;
+  transform: translate3d(
+      calc(var(--px) * var(--parallax-shift, 14px)),
+      calc(var(--py) * var(--parallax-shift, 14px)),
+      0
+    )
+    rotateY(calc(var(--px) * var(--parallax-tilt, 10deg)))
+    rotateX(calc(var(--py) * var(--parallax-tilt, -10deg)));
+  transform-style: preserve-3d;
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* While the pointer is on the card the transform must track it rather than
+   lag behind; the long ease exists for the release back to flat. */
+.tilt-surface[data-tilting="true"] {
+  transition-duration: 120ms, 120ms, 250ms;
+  will-change: transform;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tilt-surface:hover {
+    --tilt-lift: -6px;
+    border-color: color-mix(in oklab, var(--gold) 40%, transparent);
+    box-shadow:
+      0 2px 6px -2px color-mix(in oklab, var(--gold) 12%, transparent),
+      0 18px 40px -18px color-mix(in oklab, var(--gold) 35%, transparent);
+  }
+}
+
+/* Touch: no hover to key off, so keep every card flat and cheap. */
+@media (hover: none) {
+  .tilt-surface {
+    --tilt-lift: 0px;
+    transform: none;
+  }
+
+  .depth-layer {
+    transform: none;
+  }
+
+  .parallax-scene {
+    transform: none;
+  }
+}
+
+@keyframes orbit-spin {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
+@utility animate-orbit {
+  animation: orbit-spin var(--orbit-duration, 42s) linear infinite;
+}
+
+/* Translate only, no scale: these elements carry a very large blur radius, and
+   scaling one forces the compositor to re-rasterise it every frame. */
+@keyframes depth-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(3rem, -2.5rem, 0);
+  }
+}
+
+@utility animate-depth-drift {
+  animation: depth-drift var(--drift-duration, 26s) ease-in-out infinite;
+}
+
+/* ── Starfield ───────────────────────────────────────────────────────
+   Stars are tiled radial-gradients rather than elements: three layers cover
+   the page instead of ~150 DOM nodes, and the pattern is fixed rather than
+   random, so the server and client always agree on it.
+
+   `use.scroll.metrics.hook` publishes the scroll position once; each layer
+   pairs it with its own --rate and --tile via `star-drift` below, so the three
+   planes travel at very different speeds and wrap seamlessly. */
+
+@utility starfield-far {
+  background-image:
+    radial-gradient(1px 1px at 18px 32px, var(--star), transparent),
+    radial-gradient(1px 1px at 88px 12px, var(--star), transparent),
+    radial-gradient(1px 1px at 132px 74px, var(--star), transparent),
+    radial-gradient(1px 1px at 46px 108px, var(--star), transparent),
+    radial-gradient(1px 1px at 156px 140px, var(--star), transparent),
+    radial-gradient(1px 1px at 104px 168px, var(--star), transparent);
+  background-size: 190px 190px;
+  background-repeat: repeat;
+}
+
+@utility starfield-mid {
+  background-image:
+    radial-gradient(1.5px 1.5px at 60px 40px, var(--star), transparent),
+    radial-gradient(1.5px 1.5px at 210px 96px, var(--star), transparent),
+    radial-gradient(1.5px 1.5px at 128px 190px, var(--star), transparent),
+    radial-gradient(1.5px 1.5px at 246px 214px, var(--star), transparent),
+    radial-gradient(1.5px 1.5px at 24px 152px, var(--star), transparent);
+  background-size: 280px 280px;
+  background-repeat: repeat;
+}
+
+@utility starfield-near {
+  background-image:
+    radial-gradient(2px 2px at 120px 80px, var(--star), transparent),
+    radial-gradient(2px 2px at 330px 250px, var(--star), transparent),
+    radial-gradient(2.5px 2.5px at 220px 380px, var(--star), transparent);
+  background-size: 420px 420px;
+  background-repeat: repeat;
+}
+
+/* Seamless scroll drift for the star planes.
+   The offset wraps at --tile, and since the field repeats every --tile px an
+   offset of -tile is pixel-identical to 0 — so the motion is infinite with no
+   visible seam, and stays a compositor transform rather than a repaint. Each
+   layer therefore needs only one tile of overhang instead of enough room for
+   its whole journey. */
+@utility star-drift {
+  --scroll-y: 0;
+  /* Scroll and cursor fold into a single transform. Safe here because the only
+     animation these planes carry is the twinkle, which touches opacity — see
+     the nebulae in DepthBackground for why that distinction matters. */
+  transform: translate3d(
+    calc(var(--px, 0) * var(--pointer-shift, 0px)),
+    calc(
+      mod(var(--scroll-y) * var(--rate, 0.1) * 1px, var(--tile, 190px)) * -1 +
+        var(--py, 0) * var(--pointer-shift, 0px)
+    ),
+    0
+  );
+  will-change: transform;
+}
+
+/* Bounded scroll parallax: --travel is how far this layer moves across the
+   whole page, so depth stays readable on a short page and a long one alike.
+   Used by layers that have no repeating tile to wrap against. */
+@utility scroll-depth {
+  --scroll-progress: 0;
+  transform: translate3d(
+    calc(var(--px, 0) * var(--pointer-shift, 0px)),
+    calc(
+      var(--scroll-progress) * var(--travel, 60px) * -1 + var(--py, 0) *
+        var(--pointer-shift, 0px)
+    ),
+    0
+  );
+  will-change: transform;
+}
+
+/* Individual stars blink on their own staggered schedules — a whole plane
+   pulsing in unison reads as the sky breathing rather than as starlight. */
+@keyframes star-blink {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@utility animate-blink {
+  animation: star-blink var(--blink-duration, 4s) ease-in-out infinite;
+}
+
+/* A meteor is visible for only the first ~25% of its cycle and idles unseen for
+   the rest, which is what keeps them an occasional accent instead of a shower.
+   The element rests at opacity 0, so switching the animation off for
+   reduced-motion users leaves nothing frozen mid-streak. */
+@keyframes meteor-streak {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scaleX(0.3);
+  }
+  8% {
+    opacity: 1;
+  }
+  20% {
+    opacity: 1;
+  }
+  28%,
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--meteor-distance, 420px), 0, 0) scaleX(1);
+  }
+}
+
+@utility animate-meteor {
+  animation: meteor-streak var(--meteor-duration, 15s) linear infinite;
+}
+
 /* Never let a reveal animation strand content off-screen for reduced-motion users. */
 @media (prefers-reduced-motion: reduce) {
   .section-reveal {
@@ -137,8 +381,29 @@ body {
     transition: none;
   }
 
-  .animate-float {
+  .animate-float,
+  .animate-orbit,
+  .animate-depth-drift,
+  .animate-blink,
+  .animate-meteor {
     animation: none;
+  }
+
+  .scroll-depth,
+  .star-drift {
+    transform: none;
+  }
+
+  .tilt-surface {
+    transform: none;
+    transition:
+      box-shadow 250ms ease,
+      border-color 250ms ease;
+  }
+
+  .depth-layer,
+  .parallax-scene {
+    transform: none;
   }
 }
 

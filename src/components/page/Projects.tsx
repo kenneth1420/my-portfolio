@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import { Calendar } from "lucide-react";
+import TiltCard from "../ui/TiltCard";
 import { projects } from "@/src/data/resume";
 
 
@@ -86,41 +88,58 @@ export default function Projects() {
           {visibleProjects.map((project, i) => (
             <div
               key={project.title}
-              className={`${reveal} hover-card bg-card border border-border rounded-2xl p-6 flex flex-col gap-4`}
+              className={`${reveal} h-full`}
               style={{ transitionDelay: `${i * 0.05}s` }}
             >
-              {/* Period */}
-              <div className="flex items-center gap-2 text-muted text-xs font-mono">
-                <Calendar size={12} />
-                <span>{project.period}</span>
-              </div>
+              {/* The reveal stays on the wrapper: it animates transform too, and
+                  would fight the tilt if both lived on the same element. */}
+              <TiltCard
+                className="bg-card border border-border rounded-2xl p-6 flex flex-col gap-4"
+                max={4}
+              >
+                {/* Period */}
+                <div className="flex items-center gap-2 text-muted text-xs font-mono">
+                  <Calendar size={12} />
+                  <span>{project.period}</span>
+                </div>
 
-              {/* Title */}
-              <h3 className="font-display text-lg font-semibold text-text leading-snug">
-                {project.title}
-              </h3>
+                {/* Title and company sit above the card face so they parallax
+                    against the body copy as the card tilts. */}
+                <h3
+                  className="depth-layer font-display text-lg font-semibold text-text leading-snug"
+                  style={{ "--depth": "30px" } as CSSProperties}
+                >
+                  {project.title}
+                </h3>
 
-              {/* Company */}
-              <p className="text-gold text-xs font-medium -mt-2">
-                {project.company}
-              </p>
+                {/* Company */}
+                <p
+                  className="depth-layer text-gold text-xs font-medium -mt-2"
+                  style={{ "--depth": "22px" } as CSSProperties}
+                >
+                  {project.company}
+                </p>
 
-              {/* Description */}
-              <p className="text-text-dim text-sm leading-relaxed flex-1">
-                {project.description}
-              </p>
+                {/* Description */}
+                <p className="text-text-dim text-sm leading-relaxed flex-1">
+                  {project.description}
+                </p>
 
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2 pt-2 border-t border-border">
-                {project.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-2.5 py-1 rounded-md bg-subtle text-text-dim text-xs font-mono"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+                {/* Tags */}
+                <div
+                  className="depth-layer flex flex-wrap gap-2 pt-2 border-t border-border"
+                  style={{ "--depth": "12px" } as CSSProperties}
+                >
+                  {project.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-2.5 py-1 rounded-md bg-subtle text-text-dim text-xs font-mono"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </TiltCard>
             </div>
           ))}
         </div>
