@@ -62,8 +62,10 @@ export default function HeroTechLogo() {
 
   return (
     <>
-      <div className="flex flex-wrap gap-4 mb-10">
-        <div className="w-full mb-2">
+      {/* Logos only — the hero's calls to action live in Hero, so there is
+          one primary action rather than three competing rows of buttons. */}
+      <div className="flex flex-wrap gap-4">
+        <div className="w-full">
           <LogoLoop
             logos={techLogos}
             speed={100}
@@ -77,18 +79,6 @@ export default function HeroTechLogo() {
             ariaLabel="Technology partners"
           />
         </div>
-        <a
-          href="#experience"
-          className="px-7 py-3 rounded-full border border-border text-text-dim font-medium text-sm hover:border-gold/50 hover:text-text transition-all duration-200"
-        >
-          View My Work
-        </a>
-        <a
-          href="#contact"
-          className="px-7 py-3 rounded-full border border-border text-text-dim font-medium text-sm hover:border-gold/50 hover:text-text transition-all duration-200"
-        >
-          Get in Touch
-        </a>
       </div>
     </>
   );

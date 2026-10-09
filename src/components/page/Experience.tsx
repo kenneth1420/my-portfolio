@@ -1,107 +1,63 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { MapPin } from "lucide-react";
 import { experiences } from "@/src/data/resume";
+import RoleDetail from "./experience/RoleDetail";
+import SectionHeading from "../ui/SectionHeading";
+import { Reveal } from "../ui/Reveal";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/Tabs";
 
+const ROLE_IDS = experiences.map((_, i) => `role-${i}`);
 
+/**
+ * Work history as tabs: the employers form the tab list, and choosing one
+ * swaps in that role's metrics, scope, and deliverables. On wide screens the
+ * list is a sticky rail beside the panel; on narrow ones it is a strip above
+ * it that scrolls sideways.
+ */
 export default function Experience() {
-  const ref = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target
-              .querySelectorAll(".section-reveal")
-              .forEach((el) => el.classList.add("visible"));
-          }
-        });
-      },
-      { threshold: 0.05 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <section id="experience" ref={ref} className="py-24 px-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="section-reveal mb-16">
-          <p className="text-gold font-mono text-sm tracking-widest mb-3">
-            03. EXPERIENCE
-          </p>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-text">
-            Work History
-          </h2>
-        </div>
+    <section id="experience" className="py-28 px-6">
+      <Tabs
+        defaultValue={ROLE_IDS[0]}
+        className="max-w-6xl mx-auto grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-10 lg:gap-20"
+      >
+        <div className="lg:sticky lg:top-28 self-start min-w-0">
+          <SectionHeading
+            index="03"
+            eyebrow="Experience"
+            title="Work"
+            accent="history"
+          />
 
-        {/* Timeline */}
-        <div className="relative">
-          {/* Vertical line */}
-          <div className="absolute left-4 md:left-8 top-0 bottom-0 w-px bg-gradient-to-b from-gold/50 via-border to-transparent" />
-
-          <div className="space-y-10">
-            {experiences.map((exp, i) => (
-              <div
-                key={`${exp.company}-${i}`}
-                className="section-reveal relative pl-14 md:pl-24"
-                style={{ transitionDelay: `${i * 0.1}s` }}
-              >
-                {/* Timeline dot */}
-                <div
-                  className={`absolute left-1 md:left-5 top-1 w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                    exp.current
-                      ? "border-gold bg-gold/20"
-                      : "border-border bg-card"
-                  }`}
+          <Reveal>
+            <TabsList
+              aria-label="Employers"
+              className="mt-10 gap-2 overflow-x-auto pb-2 lg:flex-col lg:gap-0 lg:overflow-visible lg:border-l lg:border-border lg:pb-0"
+            >
+              {experiences.map((exp, i) => (
+                <TabsTrigger
+                  key={ROLE_IDS[i]}
+                  value={ROLE_IDS[i]}
+                  className="shrink-0 rounded-full border border-border px-4 py-2 text-left text-sm text-text-dim hover:text-text data-[state=active]:border-primary/50 data-[state=active]:bg-primary/15 data-[state=active]:text-primary-strong lg:-ml-px lg:rounded-none lg:border-0 lg:border-l-2 lg:border-transparent lg:py-2.5 lg:pl-5 lg:data-[state=active]:border-primary lg:data-[state=active]:bg-transparent"
                 >
-                  {exp.current && (
-                    <div className="w-2 h-2 rounded-full bg-gold animate-pulse" />
-                  )}
-                </div>
-
-                <div className="hover-card bg-card border border-border rounded-2xl p-6 md:p-8">
-                  <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
-                    <div>
-                      <h3 className="font-display text-xl font-semibold text-text mb-1">
-                        {exp.role}
-                      </h3>
-                      <p className="text-gold font-medium">{exp.company}</p>
-                    </div>
-                    <div className="text-right">
-                      <span
-                        className={`inline-block px-3 py-1 rounded-full text-xs font-mono ${
-                          exp.current
-                            ? "bg-gold/10 text-gold border border-gold/30"
-                            : "bg-subtle text-muted border border-border"
-                        }`}
-                      >
-                        {exp.period}
-                      </span>
-                      <div className="flex items-center gap-1 justify-end mt-2 text-muted text-xs">
-                        <MapPin size={11} />
-                        <span>{exp.location}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <ul className="space-y-2">
-                    {exp.highlights.map((h, j) => (
-                      <li key={j} className="flex gap-3 text-text-dim text-sm leading-relaxed">
-                        <span className="text-gold mt-1.5 flex-shrink-0 text-xs">▸</span>
-                        <span>{h}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            ))}
-          </div>
+                  {exp.company}
+                  <span className="hidden lg:block font-mono text-[11px] text-text-dim mt-0.5">
+                    {exp.period}
+                  </span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Reveal>
         </div>
-      </div>
+
+        <Reveal className="min-w-0">
+          {experiences.map((exp, i) => (
+            <TabsContent key={ROLE_IDS[i]} value={ROLE_IDS[i]}>
+              <RoleDetail role={exp} />
+            </TabsContent>
+          ))}
+        </Reveal>
+      </Tabs>
     </section>
   );
 }

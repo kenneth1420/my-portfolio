@@ -1,112 +1,164 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import type { CSSProperties } from "react";
-import { MapPin, GraduationCap, Building } from "lucide-react";
-import TiltCard from "../ui/TiltCard";
-import { education } from "@/src/data/resume";
+import type { ReactNode } from "react";
+import Image from "next/image";
+import { Building, GraduationCap, MapPin } from "lucide-react";
+import CountUp from "../ui/CountUp";
+import SectionHeading from "../ui/SectionHeading";
+import { Stagger, StaggerItem } from "../ui/Reveal";
+import { education, experiences } from "@/src/data/resume";
+import { site, stats } from "@/src/data/site";
+import avatarImage from "../../assets/avatar-profile.jpg";
 
-const stats = [
-  { value: "7+", label: "Years Experience" },
-  { value: "17", label: "Projects Delivered" },
-  { value: "5", label: "Companies Served" },
-  { value: "3", label: "Tech Stacks" },
-];
+const current = experiences.find((exp) => exp.current);
+
+interface TileProps {
+  children: ReactNode;
+  /** Deal order within the bento. */
+  index: number;
+  className?: string;
+}
+
+/** One cell of the bento: shared chrome, its span supplied by the caller. */
+function Tile({ children, index, className = "" }: TileProps) {
+  return (
+    <StaggerItem index={index} className={className}>
+      <div className="glow-border hover-card h-full bg-card/80 backdrop-blur-sm border border-border rounded-3xl p-6 md:p-7">
+        {children}
+      </div>
+    </StaggerItem>
+  );
+}
 
 export default function About() {
-  const ref = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target
-              .querySelectorAll(".section-reveal")
-              .forEach((el) => el.classList.add("visible"));
-          }
-        });
-      },
-      { threshold: 0.15 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <section id="about" ref={ref} className="py-24 px-6">
+    <section id="about" className="py-28 px-6 bg-surface/40">
       <div className="max-w-6xl mx-auto">
-        {/* Section header */}
-        <div className="section-reveal mb-16">
-          <p className="text-gold font-mono text-sm tracking-widest mb-3">
-            01. ABOUT
-          </p>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-text">
-            Who I Am
-          </h2>
-        </div>
+        <SectionHeading
+          index="02"
+          eyebrow="About"
+          title="Who I"
+          accent="am"
+          className="mb-14"
+        />
 
-        <div className="grid lg:grid-cols-2 gap-16 items-start">
-          {/* Left – text */}
-          <div className="section-reveal space-y-6">
-            <p className="text-text-dim leading-relaxed text-lg">
-              I&apos;m a passionate and detail-oriented Full-Stack Developer who
-              enjoys building reliable, high-quality web and mobile applications.
-              I&apos;ve worked across the full stack using modern tools and
-              frameworks, and I thrive in collaborative environments where I can
-              learn from others and share ideas.
-            </p>
-            <p className="text-text-dim leading-relaxed">
-              I&apos;m looking for a role where I can help build meaningful
-              products, grow with new technologies, and make a positive impact
-              through clean, maintainable, and thoughtful code.
-            </p>
+        {/* Bento: the portrait and the statement share the top band, the
+            figures run beneath as their evidence, and the facts close the
+            grid. */}
+        <Stagger
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[minmax(150px,auto)]"
+          step={70}
+        >
+          {/* The face behind the work. It lives here rather than in the
+              hero, which belongs to the 3D scene. Not a Tile: the photo runs
+              to the card's edge, so it needs the chrome without the padding. */}
+          <StaggerItem index={0} className="col-span-2 lg:col-span-1 lg:row-span-2">
+            <figure className="glow-border hover-card relative h-80 lg:h-full lg:min-h-80 rounded-3xl border border-border">
+              <div className="absolute inset-0 overflow-hidden rounded-[inherit]">
+                <Image
+                  src={avatarImage}
+                  alt={`Portrait of ${site.name}`}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 280px"
+                  className="object-cover object-top"
+                />
+                {/* Scrim so the caption reads over any part of the photo,
+                    in either theme. */}
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-black/75 to-transparent"
+                />
+              </div>
+              <figcaption className="absolute inset-x-0 bottom-0 p-5">
+                <span className="block font-headline text-lg font-bold leading-tight text-white">
+                  {site.name}
+                </span>
+                <span className="block mt-0.5 font-mono text-[11px] uppercase tracking-wider text-white/75">
+                  {site.role}
+                </span>
+              </figcaption>
+            </figure>
+          </StaggerItem>
 
-            {/* Quick facts */}
-            <div className="pt-4 space-y-3">
-              <div className="flex items-center gap-3 text-text-dim">
-                <MapPin size={15} className="text-gold flex-shrink-0" />
-                <span>Davao City, Philippines</span>
-              </div>
-              <div className="flex items-center gap-3 text-text-dim">
-                <GraduationCap size={15} className="text-gold flex-shrink-0" />
-                <span>
-                  BS Computer Science &mdash; {education[0].school} (
-                  {education[0].period})
-                </span>
-              </div>
-              <div className="flex items-center gap-3 text-text-dim">
-                <Building size={15} className="text-gold flex-shrink-0" />
-                <span>
-                  Currently: Full Stack Software Engineer @ Davao City Water
-                  District
-                </span>
-              </div>
+          <Tile index={1} className="col-span-2 lg:col-span-3 lg:row-span-2">
+            <div className="flex h-full flex-col justify-between gap-8">
+              <p className="font-serif text-2xl md:text-[1.7rem] leading-snug text-text">
+                I build the software people open first thing at work — ERP
+                modules, clinic systems, CRMs — and the mobile apps that sit in
+                front of them.
+              </p>
+              <p className="text-text-dim text-sm leading-relaxed max-w-lg">
+                Most of it is C# and ASP.NET Core behind React or React Native.
+                I care about data that stays correct, screens that stay fast,
+                and code the next developer can read. Next, I want a team
+                building something people rely on.
+              </p>
             </div>
-          </div>
+          </Tile>
 
-          {/* Right – stats */}
-          <div className="section-reveal grid grid-cols-2 gap-4">
-            {stats.map((stat) => (
-              <TiltCard
-                key={stat.label}
-                className="bg-card border border-border rounded-2xl p-6"
-                max={3}
-              >
-                {/* The figure floats a little above the card face, so it
-                    parallaxes against the label as the card tilts. */}
-                <p
-                  className="depth-layer font-display text-4xl font-bold text-gold mb-1"
-                  style={{ "--depth": "20px" } as CSSProperties}
-                >
-                  {stat.value}
+          {stats.map((stat, i) => (
+            <Tile key={stat.label} index={i + 2}>
+              <div className="flex h-full flex-col justify-between gap-6">
+                <p className="text-muted text-[11px] font-mono uppercase tracking-wider">
+                  {stat.label}
                 </p>
-                <p className="text-text-dim text-sm">{stat.label}</p>
-              </TiltCard>
-            ))}
-          </div>
-        </div>
+                <p className="font-serif text-6xl text-primary-gradient leading-none pr-1">
+                  <CountUp value={stat.value} suffix={stat.suffix} />
+                </p>
+              </div>
+            </Tile>
+          ))}
+
+          <Tile index={6} className="col-span-2 lg:col-span-1">
+            <Fact icon={<MapPin size={16} />} label="Based in">
+              {site.location.label}
+            </Fact>
+          </Tile>
+
+          <Tile index={7} className="col-span-2">
+            <Fact icon={<GraduationCap size={16} />} label="Education">
+              BS Computer Science — {education[0].school}
+              <span className="text-muted"> · {education[0].period}</span>
+            </Fact>
+          </Tile>
+
+          {current && (
+            <Tile index={8} className="col-span-2 lg:col-span-1">
+              <Fact icon={<Building size={16} />} label="Currently">
+                <span className="flex items-center gap-2">
+                  <span className="relative flex h-2 w-2 shrink-0">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-60 motion-reduce:animate-none" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
+                  </span>
+                  {current.company}
+                </span>
+              </Fact>
+            </Tile>
+          )}
+        </Stagger>
       </div>
     </section>
+  );
+}
+
+interface FactProps {
+  icon: ReactNode;
+  label: string;
+  children: ReactNode;
+}
+
+function Fact({ icon, label, children }: FactProps) {
+  return (
+    <div className="flex h-full flex-col justify-between gap-6">
+      <span className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/25 text-primary flex items-center justify-center">
+        {icon}
+      </span>
+      <div>
+        <p className="text-muted text-[11px] font-mono uppercase tracking-wider mb-1">
+          {label}
+        </p>
+        <div className="text-text text-sm leading-relaxed">{children}</div>
+      </div>
+    </div>
   );
 }

@@ -1,122 +1,125 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { FileText, Menu, X } from "lucide-react";
+import { motion } from "motion/react";
+import dynamic from "next/dynamic";
+import Link from "next/link";
+import { FileText, Search } from "lucide-react";
+import DockTab from "./nav/DockTab";
+import ThemeToggle from "../ui/ThemeToggle";
+import { REVEAL_ATTR } from "../ui/Reveal";
 import { site } from "@/src/data/site";
+import { useActiveSection } from "@/src/hook/use.active.section.hook";
+import { useUiStore } from "@/src/store/ui.store";
 
-const navLinks = [
-  { href: "#about", label: "About" },
-  { href: "#skills", label: "Skills" },
-  { href: "#experience", label: "Experience" },
+// Client-only and in its own chunk: cmdk and the dialog load after the page
+// is interactive. The ⌘K listener lives inside it, so the shortcut comes
+// alive when the chunk does; the dock button works either way, because it
+// only flips a flag in the store.
+const CommandMenu = dynamic(() => import("./nav/CommandMenu"), { ssr: false });
+
+const tabs = [
   { href: "#projects", label: "Projects" },
-  { href: "/resume", label: "Resume" },
+  { href: "#about", label: "About" },
+  { href: "#experience", label: "Experience" },
+  { href: "#skills", label: "Skills" },
   { href: "#contact", label: "Contact" },
 ];
 
-export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+// Module scope keeps the array identity stable for the hook's effect.
+const sectionIds = tabs.map((tab) => tab.href.slice(1));
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+const ICON_BUTTON =
+  "grid size-8 min-[380px]:size-9 place-items-center rounded-full text-text-dim transition-colors duration-200 hover:bg-primary/10 hover:text-primary-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-strong";
+
+function Divider({ className = "" }: { className?: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`mx-0.5 h-5 w-px bg-border min-[380px]:mx-1 ${className}`}
+    />
+  );
+}
+
+/**
+ * The floating dock: one glass pill, bottom centre, on every screen size.
+ *
+ * Tabs follow the reader. `useActiveSection` reports the section under the
+ * middle of the viewport, and the shared `activeTab` pill glides beneath
+ * that tab. Over the hero nothing is active. The search button opens the
+ * command palette, which ⌘K / Ctrl+K also does.
+ *
+ * The dock rises in once the splash loader has lifted. A reading-progress
+ * hairline runs along its bottom edge, driven by a CSS scroll timeline
+ * where supported.
+ */
+export default function Navbar() {
+  const activeId = useActiveSection(sectionIds);
+  const openCommandMenu = useUiStore((state) => state.setCommandOpen);
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${"bg-white/10 dark:bg-black/20 backdrop-blur-md border-b border-border/50"}`}
-    >
-      <nav className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Logo */}
-        <a
-          href="#"
-          className="font-display text-xl font-semibold tracking-wide"
-        >
-          <span className="text-gold-gradient">KL</span>
-          <span className="text-text-dim font-light ml-1 text-sm font-body">
-            &nbsp;/&nbsp;dev
-          </span>
-        </a>
-
-        {/* Desktop Links */}
-        <ul className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <li key={link.href}>
-              <a
-                href={link.href}
-                className="text-text-dim hover:text-gold transition-colors duration-200 text-sm font-medium tracking-wide"
-              >
-                {link.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-
-        {/* CTA */}
-        <div className="hidden md:flex items-center gap-3">
+    <>
+      <motion.nav
+        {...REVEAL_ATTR}
+        aria-label="Primary"
+        initial={{ y: 96, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 1.3, type: "spring", stiffness: 260, damping: 26 }}
+        // The wrapper spans the width only to centre the dock; it must not
+        // swallow clicks on the page either side of it.
+        className="pointer-events-none fixed inset-x-0 bottom-4 z-50 flex justify-center px-2 min-[380px]:px-3 sm:bottom-6 print:hidden"
+      >
+        <div className="pointer-events-auto relative flex items-center rounded-full border border-border/70 bg-white/65 p-1 min-[380px]:p-1.5 shadow-[0_18px_50px_-20px_rgba(0,0,0,0.45)] backdrop-blur-xl dark:bg-black/45">
           <a
-            href={site.resumePath}
-            download
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold text-ink text-sm font-semibold hover:bg-gold-light transition-all duration-200 shadow-lg shadow-gold/20"
+            href="#"
+            aria-label={`${site.name}, back to top`}
+            className="hidden h-9 items-center rounded-full px-3 font-serif text-lg italic text-primary-gradient focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-strong sm:flex"
           >
-            <FileText size={14} />
-            Resume
+            {site.initials}
           </a>
-          <a
-            href="#contact"
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-gold/40 text-gold text-sm font-medium hover:bg-gold/10 transition-all duration-200"
-          >
-            Hire Me
-          </a>
-        </div>
+          <Divider className="hidden sm:block" />
 
-        {/* Mobile toggle */}
-        <button
-          className="md:hidden text-text-dim hover:text-gold transition-colors"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
-        >
-          {menuOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
-      </nav>
-
-      {/* Mobile Menu */}
-      {menuOpen && (
-        <div className="border-b border-border/50 px-6 py-4">
-          <ul className="flex flex-col gap-4">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <a
-                  href={link.href}
-                  onClick={() => setMenuOpen(false)}
-                  className="text-text-dim hover:text-gold transition-colors text-sm font-medium"
-                >
-                  {link.label}
-                </a>
+          <ul className="flex items-center">
+            {tabs.map((tab) => (
+              <li key={tab.href}>
+                <DockTab
+                  href={tab.href}
+                  label={tab.label}
+                  isActive={tab.href === `#${activeId}`}
+                />
               </li>
             ))}
-            <li className="flex flex-wrap gap-3 pt-1">
-              <a
-                href={site.resumePath}
-                download
-                onClick={() => setMenuOpen(false)}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold text-ink text-sm font-semibold hover:bg-gold-light transition-all duration-200"
-              >
-                <FileText size={14} />
-                Resume
-              </a>
-              <a
-                href="#contact"
-                onClick={() => setMenuOpen(false)}
-                className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-gold/40 text-gold text-sm font-medium hover:bg-gold/10 transition-all duration-200"
-              >
-                Hire Me
-              </a>
-            </li>
           </ul>
+
+          <Divider />
+          <button
+            type="button"
+            onClick={() => openCommandMenu(true)}
+            aria-label="Open command menu"
+            aria-keyshortcuts="Meta+K Control+K"
+            title="Command menu (⌘K / Ctrl+K)"
+            className={ICON_BUTTON}
+          >
+            <Search aria-hidden="true" size={16} />
+          </button>
+          {/* Below 380px the dock cannot fit every control, so the resume
+              link yields; the PDF stays one tap away in Contact. */}
+          <Link
+            href="/resume"
+            aria-label="Resume"
+            title="Resume"
+            className={`${ICON_BUTTON} max-[379px]:hidden`}
+          >
+            <FileText aria-hidden="true" size={16} />
+          </Link>
+          <ThemeToggle className={ICON_BUTTON} />
+
+          <span
+            aria-hidden="true"
+            className="scroll-progress pointer-events-none absolute inset-x-8 -bottom-px h-px bg-linear-to-r from-primary/0 via-primary to-primary/0"
+          />
         </div>
-      )}
-    </header>
+      </motion.nav>
+      <CommandMenu />
+    </>
   );
 }

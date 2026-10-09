@@ -1,27 +1,31 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
-import { Sun, Moon } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 
-export default function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme(); // 👈 resolvedTheme not theme
-  const [mounted, setMounted] = useState(false);
+interface IProps {
+  className?: string;
+}
 
-  useEffect(() => setMounted(true), []);
-  if (!mounted) return null;
+/**
+ * Light/dark switch. Both icons are always rendered and the `dark:` variant
+ * picks the visible one. next-themes sets the class on <html> before
+ * hydration, so the right icon shows from the first paint. That avoids a
+ * mounted-state guard, which would cost an extra render and a hydration
+ * special case. `resolvedTheme` is only read on click.
+ */
+export default function ThemeToggle({ className = "" }: IProps) {
+  const { resolvedTheme, setTheme } = useTheme();
 
   return (
     <button
+      type="button"
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-      className="bg-white/10 dark:bg-black/20 backdrop-blur-md fixed bottom-6 right-6 z-50 p-3 rounded-full border border-border bg-card hover:border-gold shadow-lg transition-colors"
       aria-label="Toggle theme"
+      className={className}
     >
-      {resolvedTheme === "dark" ? (
-        <Sun className="w-5 h-5 text-gold" />
-      ) : (
-        <Moon className="w-5 h-5 text-gold" />
-      )}
+      <Sun aria-hidden="true" className="hidden size-4 dark:block" />
+      <Moon aria-hidden="true" className="block size-4 dark:hidden" />
     </button>
   );
 }

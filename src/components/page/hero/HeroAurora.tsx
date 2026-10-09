@@ -11,9 +11,13 @@ export default function HeroAurora() {
   if (isMobile) return null;
 
   return (
-    <div className="absolute inset-0 z-0 pointer-events-none">
+    // Coloured light on white has nothing to contrast with — at full strength
+    // it swallows the accent type and the nav. Light mode keeps only a glow.
+    <div className="absolute inset-0 z-0 pointer-events-none opacity-30 dark:opacity-100">
       <Aurora
-        colorStops={["#66c4ff", "#B19EEF", "#5227FF"]}
+        // Deep sea → sky → emerald: the site accents, so the hero
+        // light belongs to the same palette as every button and card edge.
+        colorStops={["#0c4a6e", "#38bdf8", "#10b981"]}
         blend={1}
         amplitude={1.0}
         speed={1}

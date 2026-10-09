@@ -1,174 +1,223 @@
 "use client";
-import type { CSSProperties } from "react";
-import Image from "next/image";
-import HeroAurora from "./hero/HeroAurora";
-import SplitText from "../ui/SplitText";
-import BlurText from "../ui/BlurText";
-import ShinyText from "../ui/ShinyText";
-import avatarImage from "../../assets/avatar-profile.jpg";
-import HeroTechLogo from "./hero/HeroTechLogo";
-import HeroObject from "./hero/HeroObject";
-import { usePointerParallax } from "@/src/hook/use.pointer.parallax.hook";
 
-import NextLink from "next/link";
-import { ArrowDown, Download, FileText, Mail, Phone, Link } from "lucide-react";
-import { useIsMobile } from "@/src/hook/use.mobile.hook";
+import { motion } from "motion/react";
+import type { CSSProperties, ReactNode } from "react";
+import { ArrowRight, ArrowUpRight, FileText, Mail, Phone } from "lucide-react";
+import { FaLinkedin } from "react-icons/fa";
+import AvailabilityBadge from "./hero/AvailabilityBadge";
+import HeroStage from "./hero/HeroStage";
+import HeroStats from "./hero/HeroStats";
+import KineticHeading from "./hero/KineticHeading";
+import MagneticButton from "./hero/MagneticButton";
+import { heroCtas } from "@/src/data/hero";
 import { site } from "@/src/data/site";
+import { useHeroJourney } from "@/src/hook/use.hero.journey.hook";
+import type { IKineticLine } from "@/src/hook/use.kinetic.heading.hook";
 
+const socialLinks = [
+  { icon: FaLinkedin, label: "LinkedIn profile", href: site.linkedin },
+  { icon: Mail, label: `Email ${site.email}`, href: `mailto:${site.email}` },
+  { icon: Phone, label: `Call ${site.phone}`, href: site.phoneHref },
+];
+
+/**
+ * The glyph that trails each call to action, keyed by where it leads. The
+ * labels, targets and order are data, in `heroCtas`.
+ */
+const ctaIcons: Record<string, ReactNode> = {
+  "#projects": (
+    <ArrowRight
+      size={15}
+      className="transition-transform duration-300 group-hover:translate-x-1"
+    />
+  ),
+  "/resume": <FileText size={15} />,
+  "#contact": (
+    <ArrowUpRight
+      size={15}
+      className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+    />
+  ),
+};
+
+/**
+ * Entrance timing, in milliseconds. The splash loader holds for 700ms and then
+ * fades, so the name begins springing up just as the page is uncovered. The
+ * name and title are motion springs; everything else is the CSS load-*
+ * animations, ordered here to land after the title's last character.
+ */
+const T = { meta: 400, name: 550, copy: 1250, bar: 1400 };
+
+/** The kinetic headline, in reading order: name, surname, then title. */
+const headline: IKineticLine[] = [
+  { text: "Kenneth", className: "text-[clamp(3.25rem,10vw,8.5rem)]" },
+  {
+    text: "Lariosa",
+    className: "text-[clamp(3.25rem,10vw,8.5rem)] pl-[0.45em] lg:pl-[0.75em]",
+    charClassName: "text-primary-gradient",
+  },
+  {
+    text: site.role,
+    className:
+      "mt-5 max-w-[22ch] sm:max-w-none text-[clamp(1.05rem,2.3vw,1.7rem)] font-medium leading-snug tracking-[-0.01em] text-text-dim",
+  },
+];
+
+const at = (delay: number) => ({ "--delay": `${delay}ms` }) as CSSProperties;
+
+/**
+ * The hero: a scroll track with the 3D desk scene pinned behind the text.
+ *
+ * Three boxes, laid out by the hero utilities in `globals.css`:
+ *
+ * - the section is the track, as tall as the journey is long
+ * - the stage is pinned inside it and holds the poster and the canvas
+ * - the overlay is the hero's real text, ordinary in-flow content on the
+ *   track's first screen, which scrolls away like any other page
+ *
+ * Under reduced motion, on a very short viewport, and without JavaScript,
+ * CSS leaves the track one screen tall and this is a normal section.
+ *
+ * The section must not gain overflow, transform, filter or contain, and
+ * neither may anything above it: the stage's `position: sticky` depends on
+ * that.
+ */
 export default function Hero() {
-  const isMobile = useIsMobile();
-  const portraitRef = usePointerParallax<HTMLDivElement>();
+  const {
+    trackRef,
+    stageRef,
+    overlayRef,
+    progress,
+    overlayOpacity,
+    overlayPointerEvents,
+    backdropOpacity,
+    isNear,
+    stage,
+    scene,
+  } = useHeroJourney();
 
   return (
-    <section className="relative min-h-screen flex items-center pt-20 pb-10 px-6 overflow-hidden">
-      <HeroAurora />
-      <div className="absolute right-8 top-1/2 -translate-y-1/2 hidden xl:flex flex-col items-center gap-4">
-        <div className="w-px h-24 bg-gradient-to-b from-transparent to-border" />
-        <span
-          className="text-muted text-xs tracking-[0.3em] font-mono"
-          style={{ writingMode: "vertical-rl" }}
-        >
-          FULL STACK DEV
-        </span>
-        <div className="w-px h-24 bg-gradient-to-b from-border to-transparent" />
+    <section
+      id="hero"
+      ref={trackRef}
+      aria-label="Introduction"
+      data-hero-stage={stage ?? undefined}
+      data-hero-scene={scene}
+      className="hero-track"
+    >
+      <div ref={stageRef} aria-hidden="true" className="hero-stage">
+        <HeroStage
+          progress={progress}
+          isNear={isNear}
+          scene={scene}
+          backdropOpacity={backdropOpacity}
+        />
       </div>
-      <div className="max-w-6xl mx-auto w-full grid lg:grid-cols-2 gap-12 lg:gap-20 items-center relative z-10">
-        <div>
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-subtle border border-border text-gold text-xs font-mono tracking-wider mb-8">
-            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            Available for opportunities
-          </div>
 
-          <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-4">
-            <SplitText text="Kenneth" delay={30} />
-            <br />
-            <span className="text-gold-gradient italic">
-              <SplitText text="Lariosa" delay={30} />
-            </span>
-          </h1>
+      {/* The text fades as it scrolls off, and stops taking clicks once it
+          is nearly gone. Nothing here is ever inert or hidden from assistive
+          technology, so the h1 and the links are reachable from anywhere on
+          the page. Tabbing back to a link makes the browser scroll it into
+          view, and the `has-[:focus-visible]` pair beats the inline fade,
+          so a focused control is always visible and clickable.
 
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-0.5 bg-gold rounded-full" />
-            <span className="text-text-dim font-body font-light text-lg tracking-wide">
-              <BlurText text="Full Stack Developer" delay={100} />
-            </span>
-          </div>
-
-          <p className="text-text-dim leading-relaxed max-w-md mb-8 font-body">
-            <BlurText
-              text="Passionate about building reliable, high-quality web and mobile applications. Experienced across the full stack — focused on clean, maintainable code."
-              delay={40}
-              duration={500}
-            />
-          </p>
-
-          <HeroTechLogo />
-
-          <div className="flex flex-wrap items-center gap-3 mb-8">
-            <a
-              href={site.resumePath}
-              download
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gold text-ink font-semibold text-sm hover:bg-gold-light transition-colors duration-200 shadow-lg shadow-gold/20"
-            >
-              <Download size={15} />
-              Download Resume
-            </a>
-            <NextLink
-              href="/resume"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-gold/40 text-gold font-medium text-sm hover:bg-gold/10 transition-colors duration-200"
-            >
-              <FileText size={15} />
-              View Resume
-            </NextLink>
-          </div>
-
-          <div className="flex items-center gap-5">
-            <a
-              href="https://www.linkedin.com/in/kenneth-lariosa-dev"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted hover:text-gold transition-colors"
-            >
-              <Link size={18} />
-            </a>
-            <a
-              href="mailto:kennethlariosa14@gmail.com"
-              className="text-muted hover:text-gold transition-colors"
-            >
-              <Mail size={18} />
-            </a>
-            <a
-              href="tel:+639460364852"
-              className="text-muted hover:text-gold transition-colors"
-            >
-              <Phone size={18} />
-            </a>
-            <div className="w-px h-4 bg-border mx-1" />
-            {isMobile ? (
-              <span className="text-muted text-xs font-mono">
-                kennethlariosa14@gmail.com
-              </span>
-            ) : (
-              <span className="text-muted text-xs font-mono">
-                <ShinyText text="kennethlariosa14@gmail.com" speed={4} />
-              </span>
-            )}
-          </div>
-        </div>
-
-        <div className="perspective-card relative flex justify-center lg:justify-end mt-12 lg:mt-0">
-          {/* The whole portrait cluster is one 3D scene: the rig sits behind the
-              photo and the stat badge floats in front, so cursor movement pulls
-              them across each other instead of sliding the group as a slab. */}
-          <div
-            ref={portraitRef}
-            className="parallax-scene relative"
-            style={
-              {
-                "--parallax-shift": "10px",
-                "--parallax-tilt": "5deg",
-              } as CSSProperties
-            }
-          >
-            <HeroObject />
-
-            <div className="absolute -top-2 -right-2 w-6 h-6 md:w-8 md:h-8 border-t-2 border-r-2 border-gold rounded-tr-lg" />
-            <div className="absolute -bottom-2 -left-2 w-6 h-6 md:w-8 md:h-8 border-b-2 border-l-2 border-gold rounded-bl-lg" />
-
-            <div className="relative w-48 h-48 sm:w-56 sm:h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-full overflow-hidden border-2 border-border shadow-2xl shadow-gold/10">
-              <Image
-                src={avatarImage}
-                alt="Kenneth Lariosa"
-                fill
-                sizes="(max-width: 640px) 192px, (max-width: 768px) 224px, (max-width: 1024px) 288px, 320px"
-                className="object-cover object-top"
-                fetchPriority="high"
-                priority
-              />
-            </div>
-
-            <div
-              className="depth-layer absolute -bottom-4 -right-4 sm:-bottom-4 sm:-right-4 md:-bottom-6 md:-right-6 bg-white/10 dark:bg-black/20 backdrop-blur-md border border-border rounded-2xl px-3 py-2 md:px-4 md:py-3 shadow-xl"
-              style={{ "--depth": "55px" } as CSSProperties}
-            >
-              <p className="text-[10px] md:text-xs text-muted font-mono">
-                Experience
-              </p>
-              <p className="text-lg md:text-xl font-display font-bold text-gold">
-                7+
-              </p>
-              <p className="text-[10px] md:text-xs text-text-dim">Years</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <a
-        href="#about"
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted hover:text-gold transition-colors"
+          The bottom padding keeps the calls to action above the floating
+          dock on the first screen. */}
+      <motion.div
+        ref={overlayRef}
+        style={{ opacity: overlayOpacity, pointerEvents: overlayPointerEvents }}
+        className="hero-overlay relative flex flex-col px-6 pt-12 sm:pt-14 pb-28 has-[:focus-visible]:opacity-100! has-[:focus-visible]:pointer-events-auto!"
       >
-        <span className="text-xs font-mono tracking-widest">SCROLL</span>
-        <ArrowDown size={14} className="animate-bounce" />
-      </a>
+        {/* Page colour behind the copy, for contrast over the scene. It is
+            inside the overlay so that it scrolls and fades with the text
+            it serves. */}
+        <div
+          aria-hidden="true"
+          className="hero-scrim pointer-events-none absolute inset-0"
+        />
+
+        <div className="relative max-w-6xl mx-auto w-full flex-1 flex flex-col">
+          {/* Meta row — the masthead line above the headline. */}
+          <div
+            style={at(T.meta)}
+            className="load-rise flex flex-wrap items-center justify-end sm:justify-between gap-4 mb-10 lg:mb-4"
+          >
+            <span className="hidden sm:block text-text-dim text-xs font-mono uppercase tracking-[0.3em]">
+              {site.location.city}, PH — ASP.NET Core · React · PostgreSQL
+            </span>
+            <AvailabilityBadge />
+          </div>
+
+          <div className="flex-1 flex items-center">
+            <div className="min-w-0">
+              {/* Kinetic headline: name, surname, then title, each line's
+                  characters springing up in turn. The surname steps in from the
+                  margin so the name reads as a set piece, not a stacked label. */}
+              <KineticHeading
+                lines={headline}
+                delay={T.name / 1000}
+                label={`${site.name} — ${site.role}`}
+                className="font-headline font-bold leading-[0.9] tracking-[-0.045em]"
+              />
+
+              <p
+                style={at(T.copy)}
+                className="load-rise mt-6 max-w-md text-lg leading-relaxed text-text-dim"
+              >
+                {site.tagline}
+              </p>
+            </div>
+          </div>
+
+          {/* Proof bar: the readout, then the ask. A rule draws across first
+              so the bar lands as one deliberate line of the layout. */}
+          <div style={at(T.bar)} className="load-rise mt-10">
+            <span
+              aria-hidden="true"
+              style={at(T.bar)}
+              className="load-rule block h-px bg-border mb-6"
+            />
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+              <div className="w-full max-w-xl">
+                <HeroStats notBefore={T.bar + 300} />
+              </div>
+
+              {/* Three calls to action, all magnetic: the work first, because
+                  it is what earns the conversation the last one asks for. */}
+              <div className="flex flex-wrap items-center gap-3">
+                {heroCtas.map((cta) => (
+                  <MagneticButton
+                    key={cta.href}
+                    href={cta.href}
+                    variant={cta.variant}
+                  >
+                    {cta.label}
+                    {ctaIcons[cta.href]}
+                  </MagneticButton>
+                ))}
+                <div className="flex items-center gap-4 pl-2">
+                  {socialLinks.map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      aria-label={link.label}
+                      target={link.href.startsWith("http") ? "_blank" : undefined}
+                      rel={
+                        link.href.startsWith("http")
+                          ? "noopener noreferrer"
+                          : undefined
+                      }
+                      className="text-muted hover:text-primary transition-colors"
+                    >
+                      <link.icon size={17} />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
     </section>
   );
 }

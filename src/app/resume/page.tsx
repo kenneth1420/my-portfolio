@@ -24,7 +24,7 @@ export default function ResumePage() {
       <div className="no-print max-w-3xl mx-auto flex items-center justify-between gap-4 mb-8">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-text-dim hover:text-gold transition-colors text-sm font-medium"
+          className="inline-flex items-center gap-2 text-text-dim hover:text-primary transition-colors text-sm font-medium"
         >
           <ArrowLeft size={15} />
           Back to portfolio
@@ -33,7 +33,7 @@ export default function ResumePage() {
         <a
           href={site.resumePath}
           download
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gold text-ink font-semibold text-sm hover:bg-gold-light transition-colors shadow-lg shadow-gold/20"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-ink font-semibold text-sm hover:bg-primary-light transition-colors shadow-lg shadow-primary/20"
         >
           <Download size={15} />
           Download PDF
@@ -46,7 +46,7 @@ export default function ResumePage() {
           <h1 className="font-display text-4xl md:text-5xl font-bold text-text tracking-tight">
             {site.name}
           </h1>
-          <p className="text-gold font-medium text-lg mt-1">{site.role}</p>
+          <p className="text-primary font-medium text-lg mt-1">{site.role}</p>
 
           <div className="flex flex-wrap gap-x-5 gap-y-2 mt-4 text-text-dim text-sm">
             {contactItems.map((item) =>
@@ -54,9 +54,9 @@ export default function ResumePage() {
                 <a
                   key={item.label}
                   href={item.href}
-                  className="inline-flex items-center gap-1.5 hover:text-gold transition-colors"
+                  className="inline-flex items-center gap-1.5 hover:text-primary transition-colors"
                 >
-                  <item.icon size={13} className="text-gold" />
+                  <item.icon size={13} className="text-primary" />
                   {item.label}
                 </a>
               ) : (
@@ -64,7 +64,7 @@ export default function ResumePage() {
                   key={item.label}
                   className="inline-flex items-center gap-1.5"
                 >
-                  <item.icon size={13} className="text-gold" />
+                  <item.icon size={13} className="text-primary" />
                   {item.label}
                 </span>
               ),
@@ -74,11 +74,11 @@ export default function ResumePage() {
           <div className="flex flex-wrap gap-x-5 gap-y-2 mt-2 text-text-dim text-sm">
             <a
               href={site.linkedin}
-              className="hover:text-gold transition-colors"
+              className="hover:text-primary transition-colors"
             >
               {site.linkedin.replace("https://", "")}
             </a>
-            <a href={site.github} className="hover:text-gold transition-colors">
+            <a href={site.github} className="hover:text-primary transition-colors">
               {site.github.replace("https://", "")}
             </a>
           </div>
@@ -109,7 +109,7 @@ export default function ResumePage() {
                   </span>
                 </div>
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4 mb-2">
-                  <p className="text-gold text-sm font-medium">{exp.company}</p>
+                  <p className="text-primary text-sm font-medium">{exp.company}</p>
                   <span className="text-muted text-xs">{exp.location}</span>
                 </div>
                 <ul className="space-y-1.5">
@@ -118,7 +118,7 @@ export default function ResumePage() {
                       key={highlight}
                       className="flex gap-2.5 text-text-dim text-sm leading-relaxed"
                     >
-                      <span className="text-gold mt-1.5 shrink-0 text-[8px]">
+                      <span className="text-primary mt-1.5 shrink-0 text-[8px]">
                         ●
                       </span>
                       <span>{highlight}</span>
@@ -160,7 +160,7 @@ export default function ResumePage() {
                 </span>
               </div>
               <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-                <p className="text-gold text-sm font-medium">{item.school}</p>
+                <p className="text-primary text-sm font-medium">{item.school}</p>
                 <span className="text-muted text-xs">{item.location}</span>
               </div>
             </div>

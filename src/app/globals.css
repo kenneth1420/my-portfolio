@@ -9,8 +9,8 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  --color-gold: var(--gold);
-  --color-gold-light: var(--gold-light);
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
   --color-ink: var(--ink);
   --color-surface: var(--surface);
   --color-card: var(--card);
@@ -19,26 +19,37 @@
   --color-text: var(--text);
   --color-text-dim: var(--text-dim);
   --color-subtle: var(--subtle);
+  /* Live-status accent. Fixed across themes: it signals state ("available"),
+     not brand, so it should read identically on light and dark. */
+  --color-mint: #10b981;
+  /* Sky for small text and focus rings. Neon sky is ~2.1:1 on white, so
+     light mode darkens it to clear 4.5:1; dark mode keeps the neon value. */
+  --color-primary-strong: var(--primary-strong);
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-body: var(--font-geist-sans);
-  --font-display: var(--font-geist-sans);
+  /* One typeface everywhere. The role names stay so components keep saying
+     what a piece of text is (label, headline, body) without caring that
+     they all resolve to the same family. */
+  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-headline: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
-  --gold: #d4af37;
-  --gold-light: #e5c55a;
+  --foreground: #0f172a;
+  --primary: #0284c7;
+  --primary-light: #0ea5e9;
   --ink: #ffffff;
-  --surface: #f5f5f5;
+  --surface: #f1f5f9;
   --card: #ffffff;
-  --border: #e0e0e0;
-  --muted: #888888;
-  --text: #171717;
-  --text-dim: #555555;
-  --subtle: #f5f5f5;
+  --border: #dbe3ec;
+  --muted: #64748b;
+  --text: #0f172a;
+  --text-dim: #475569;
+  --subtle: #f1f5f9;
 
   /* ── Space layer ──────────────────────────────────────────────────
      Every tunable for the galaxy lives here and in the .dark block below.
@@ -46,73 +57,179 @@
      Light mode is not an inverted night sky. Stars are bright points, so on
      white there is nothing for them to be bright against and dark specks read
      as dust. Three things fix that: a sky wash for them to sit on, a glow so
-     each point reads as emitting rather than deposited, and a gold tone that
-     keeps the field on the existing accent instead of adding a second hue.
+     each point reads as emitting rather than deposited, and a slate-blue tone that
+     keeps the field in the page palette instead of adding another hue.
 
      A light-mode star also has to be darker than its background to register at
-     all, so this is a deep bronze at high alpha rather than a pale gold. */
-  --star: rgba(146, 112, 30, 0.85);
+     all, so this is a deep slate blue at high alpha rather than a pale sky. */
+  --star: rgba(30, 64, 92, 0.8);
   /* The discrete blinking stars and meteor heads, kept separate from the
      ambient tiled planes above: they are larger and carry the motion, so they
-     need real contrast. At 0.85 alpha the gold above composites to only
-     3.5:1 on white — this lands near 9.8:1 while staying in the gold family. */
-  --star-bright: rgba(58, 46, 18, 0.9);
+     need real contrast. This is near-black slate, well clear of 4.5:1 on
+     white, while staying in the same cool family. */
+  --star-bright: rgba(15, 30, 48, 0.9);
   /* Barely there. A chart has hard-edged marks, and any halo on white softens
      the dot back toward the page rather than reinforcing it. */
-  --star-glow: rgba(120, 96, 30, 0.15);
-  --constellation: rgba(146, 112, 30, 0.28);
+  --star-glow: rgba(14, 116, 144, 0.15);
+  --constellation: rgba(30, 64, 92, 0.26);
   /* Blurred blobs are nebulae against black and stains against white, so light
-     mode keeps only a trace and lets the paper wash carry the warmth. */
-  --nebula: rgba(212, 175, 55, 0.05);
-  --sky-base: rgba(214, 196, 158, 0.22);
-  --sky-top: rgba(212, 175, 55, 0.1);
-  --sky-bottom: rgba(104, 98, 78, 0.08);
+     mode keeps only a trace and lets the cool sky wash carry the tone. */
+  --nebula: rgba(56, 189, 248, 0.05);
+  --sky-base: rgba(186, 214, 235, 0.22);
+  --sky-top: rgba(56, 189, 248, 0.1);
+  --sky-bottom: rgba(71, 85, 105, 0.08);
+  /* Cursor glare on the Selected Work cards: a white sheen on frosted glass. */
+  --tilt-glare: rgba(255, 255, 255, 0.55);
+  --primary-strong: #0369a1;
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ffffff;
-  --gold: #d4af37;
-  --gold-light: #e5c55a;
-  --ink: #0a0a0a;
-  --surface: #111111;
-  --card: #1a1a1a;
-  --border: #2a2a2a;
-  --muted: #666666;
-  --text: #ffffff;
-  --text-dim: #999999;
-  --subtle: #1a1a1a;
+  --background: #090d16;
+  --foreground: #f1f5f9;
+  --primary: #38bdf8;
+  --primary-light: #7dd3fc;
+  --ink: #090d16;
+  --surface: #0d1422;
+  --card: #111a2b;
+  --border: #1f2a3d;
+  --muted: #64748b;
+  --text: #f1f5f9;
+  --text-dim: #94a3b8;
+  --subtle: #131d30;
 
   /* Dark already had a night sky to work with, so the wash is switched off
      entirely here and the nebula keeps its original strength — light mode is
      the only thing these tokens change. */
-  --star: rgba(255, 255, 255, 0.85);
-  --star-bright: rgba(255, 255, 255, 0.95);
-  --star-glow: rgba(255, 255, 255, 0.5);
-  --constellation: rgba(255, 255, 255, 0.16);
-  --nebula: rgba(212, 175, 55, 0.06);
+  --star: rgba(226, 240, 255, 0.85);
+  --star-bright: rgba(240, 249, 255, 0.95);
+  --star-glow: rgba(56, 189, 248, 0.5);
+  --constellation: rgba(186, 230, 253, 0.16);
+  --nebula: rgba(56, 189, 248, 0.06);
   --sky-base: transparent;
   --sky-top: transparent;
   --sky-bottom: transparent;
+  /* On dark glass the sheen picks up a trace of sky, like the page accent. */
+  --tilt-glare: rgba(56, 189, 248, 0.09);
+  --primary-strong: #38bdf8;
+}
+
+/* Dock links glide to their section; reduced-motion users jump. The padding
+   keeps a jumped-to heading clear of the screen edge. */
+html {
+  /* Space Grotesk ships no italic. Without this the browser would slant the
+     upright glyphs to fake one; `italic` accents render upright instead. */
+  font-synthesis-style: none;
+  scroll-behavior: smooth;
+  scroll-padding-top: 2rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
 }
 
-/* Scroll-triggered reveal. The section observers add `.visible` once in view. */
-@utility section-reveal {
-  opacity: 0;
-  transform: translateY(24px);
-  transition:
-    opacity 0.7s ease,
-    transform 0.7s ease;
+/* Shared easing for the CSS load animations below. Scroll entrances moved
+   to motion (components/ui/Reveal.tsx), which uses the same curve. */
+:root {
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
 
-  &.visible {
-    opacity: 1;
-    transform: translateY(0);
+/* Load reveals — the hero plays these once on arrival, timed to land as the
+   splash loader lifts. Each keyframe has only a `from`, so it always ends on
+   the element's own resting style. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+}
+
+@keyframes word-in {
+  from {
+    transform: translate3d(0, 135%, 0);
+  }
+}
+
+@keyframes rule-in {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes iris-in {
+  from {
+    clip-path: circle(0% at 50% 50%);
+  }
+  to {
+    clip-path: circle(50% at 50% 50%);
+  }
+}
+
+@keyframes settle-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+@utility load-rise {
+  animation: rise-in 900ms var(--ease-out) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+@utility load-word {
+  animation: word-in 1000ms var(--ease-out) both;
+  animation-delay: calc(var(--delay, 0ms) + var(--i, 0) * var(--step, 70ms));
+}
+
+@utility load-rule {
+  transform-origin: left;
+  animation: rule-in 1200ms var(--ease-out) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+@utility load-iris {
+  animation: iris-in 1400ms var(--ease-out) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+@utility load-settle {
+  animation: settle-in 1200ms var(--ease-out) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+/* Experience rail: fills with the reader's progress through the roles. A
+   scroll-driven animation, so it runs on the compositor with no listener at
+   all. Browsers without scroll timelines show the plain grey rail instead. */
+@keyframes rail-fill {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@utility roles-timeline {
+  view-timeline-name: --roles;
+}
+
+@utility rail-fill {
+  display: none;
+  transform-origin: top;
+
+  @supports (animation-timeline: view()) {
+    display: block;
+    animation: rail-fill linear both;
+    animation-timeline: --roles;
+    animation-range: cover 10% cover 80%;
   }
 }
 
@@ -124,12 +241,12 @@ body {
 
   &:hover {
     transform: translateY(-5px);
-    border-color: color-mix(in oklab, var(--gold) 40%, transparent);
+    border-color: color-mix(in oklab, var(--primary) 40%, transparent);
     /* Two stops: a tight contact shadow keeps the card anchored while the
        wide one reads as distance from the page. */
     box-shadow:
-      0 2px 6px -2px color-mix(in oklab, var(--gold) 12%, transparent),
-      0 16px 36px -16px color-mix(in oklab, var(--gold) 30%, transparent);
+      0 2px 6px -2px color-mix(in oklab, var(--primary) 12%, transparent),
+      0 16px 36px -16px color-mix(in oklab, var(--primary) 30%, transparent);
   }
 }
 
@@ -137,23 +254,23 @@ body {
   background-image:
     radial-gradient(
       60rem 60rem at 15% -10%,
-      color-mix(in oklab, var(--gold) 8%, transparent),
+      color-mix(in oklab, var(--primary) 8%, transparent),
       transparent 60%
     ),
     radial-gradient(
       50rem 50rem at 100% 20%,
-      color-mix(in oklab, var(--gold) 5%, transparent),
+      color-mix(in oklab, var(--primary) 5%, transparent),
       transparent 60%
     );
   background-attachment: fixed;
 }
 
-@utility text-gold-gradient {
+@utility text-primary-gradient {
   background-image: linear-gradient(
     120deg,
-    var(--gold-light),
-    var(--gold) 45%,
-    var(--gold-light)
+    var(--primary-light),
+    var(--primary) 40%,
+    var(--color-mint)
   );
   background-clip: text;
   color: transparent;
@@ -234,10 +351,10 @@ body {
 @media (hover: hover) and (pointer: fine) {
   .tilt-surface:hover {
     --tilt-lift: -6px;
-    border-color: color-mix(in oklab, var(--gold) 40%, transparent);
+    border-color: color-mix(in oklab, var(--primary) 40%, transparent);
     box-shadow:
-      0 2px 6px -2px color-mix(in oklab, var(--gold) 12%, transparent),
-      0 18px 40px -18px color-mix(in oklab, var(--gold) 35%, transparent);
+      0 2px 6px -2px color-mix(in oklab, var(--primary) 12%, transparent),
+      0 18px 40px -18px color-mix(in oklab, var(--primary) 35%, transparent);
   }
 }
 
@@ -442,12 +559,373 @@ body {
   animation: meteor-streak var(--meteor-duration, 15s) linear infinite;
 }
 
+/* ─────────────────────────────────────────────────────────────────────
+   Premium finish
+
+   One accent, applied in the same few ways everywhere: a light sweep on the
+   primary action, a travelling sky-to-emerald edge on cards under the cursor, and a
+   film grain over the whole page. Each is a pseudo-element or a single fixed
+   layer, so none of them adds DOM to the components that use them.
+   ───────────────────────────────────────────────────────────────────── */
+
+/* A diagonal highlight that crosses the button once per hover. It rests off
+   to the left, so a reduced-motion user simply never sees it. */
+@utility btn-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      100deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.55) 50%,
+      transparent 80%
+    );
+    transform: translateX(-120%);
+    pointer-events: none;
+  }
+
+  &:hover::after,
+  &:focus-visible::after {
+    transform: translateX(120%);
+    transition: transform 750ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+/* Registered so the angle interpolates; an unregistered custom property would
+   jump straight from 0deg to 360deg. */
+@property --glow-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes glow-spin {
+  to {
+    --glow-angle: 360deg;
+  }
+}
+
+/* A 1px ring of sky and emerald light that circles the card while hovered. The
+   mask punches out everything but the padding box, so the gradient only ever
+   paints the border. The spin runs only on hover — an always-on animation at
+   opacity 0 would still repaint every frame. */
+@utility glow-border {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    padding: 1px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--glow-angle),
+      transparent 0deg 200deg,
+      var(--primary) 270deg,
+      var(--color-mint) 325deg,
+      transparent 360deg
+    );
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 400ms ease;
+    pointer-events: none;
+  }
+
+  &:hover::before {
+    opacity: 1;
+    animation: glow-spin 3.5s linear infinite;
+  }
+}
+
+/* Film grain. One fixed layer over everything at a few percent opacity takes
+   the digital flatness off large gradients without touching any component. */
+@utility grain {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+.dark .grain {
+  opacity: 0.07;
+}
+
+/* Splash bar: fills across the loader's 700ms hold. */
+@keyframes loader-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@utility animate-loader-fill {
+  animation: loader-fill 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Reading progress, driven by the scroll timeline itself rather than a JS
+   listener. Browsers without scroll-driven animations keep it hidden instead
+   of showing a bar stuck at zero. */
+@keyframes scroll-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@utility scroll-progress {
+  display: none;
+  transform-origin: left;
+
+  @supports (animation-timeline: scroll()) {
+    display: block;
+    animation: scroll-progress linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+
+/* The cursor glow's colour lives here so light and dark can tune it apart:
+   sky on white needs more strength to read than sky on black. */
+@utility cursor-glow {
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--primary) 16%, transparent),
+    transparent 62%
+  );
+
+  .dark & {
+    background: radial-gradient(
+      circle,
+      color-mix(in oklab, var(--primary) 13%, transparent),
+      transparent 62%
+    );
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Hero journey
+
+   The hero is a tall scroll track. A stage is pinned inside it for the 3D
+   desk scene, and the hero text is ordinary in-flow content on the track's
+   first screen, in the same grid cell as the stage so it sits on top.
+
+   Static is the default and the journey is opt-in through media queries.
+   Server HTML, a no-JS visit and reduced motion therefore get a normal
+   one-screen section, and the page's height never waits on JavaScript or
+   WebGL: anchors and scroll restoration see the final height at first
+   paint. `use.hero.journey.hook` only observes which mode CSS chose, by
+   checking whether the track is taller than the stage; it never sets one.
+
+   Nothing above the track may gain overflow, transform, filter or contain.
+   Any of them becomes the stage's scroll container or containing block,
+   and the pin silently stops working.
+   ───────────────────────────────────────────────────────────────────── */
+
+@utility hero-track {
+  display: grid;
+  /* Without a floor of zero the column grows to its widest child, and with
+     no overflow clipping here that would widen the whole page. */
+  grid-template-columns: minmax(0, 1fr);
+  flex-shrink: 0;
+  /* The track's box runs on past the text and under the next section. It
+     must not swallow clicks there; the overlay switches them back on. */
+  pointer-events: none;
+
+  @media (prefers-reduced-motion: no-preference) and (min-height: 560px) {
+    /* lvh, so a phone's collapsing URL bar never changes the track's
+       length mid-scroll. */
+    height: var(--hero-track, 300lvh);
+    /* Pulls the next section up over the end of the track. It enters the
+       viewport at 80% of the journey, while the canvas is fading out. */
+    margin-bottom: calc(var(--hero-overlap, 40lvh) * -1);
+  }
+
+  /* Touch gets a shorter journey: less thumb travel, same 80% entry. */
+  @media (pointer: coarse) {
+    --hero-track: 250lvh;
+    --hero-overlap: 30lvh;
+  }
+
+  @media print {
+    height: auto;
+    margin-bottom: 0;
+  }
+}
+
+@utility hero-stage {
+  grid-area: 1 / 1;
+  align-self: stretch;
+  position: relative;
+  /* The negative layer of the page's z-10 container: above the wave
+     backdrop, below every section's in-flow content. The next section
+     paints over the pinned stage without knowing it is there. */
+  z-index: -10;
+  /* clip, not hidden: hidden would make the stage a scroll container. */
+  overflow: clip;
+
+  @media (prefers-reduced-motion: no-preference) and (min-height: 560px) {
+    position: sticky;
+    top: 0;
+    /* A sticky item stretched to fill its grid area has nowhere to travel. */
+    align-self: start;
+    /* lvh again: the canvas inside never resizes its drawing buffer when
+       the URL bar moves. */
+    height: 100lvh;
+  }
+
+  @media print {
+    display: none;
+  }
+}
+
+@utility hero-overlay {
+  grid-area: 1 / 1;
+  align-self: start;
+  /* svh, unlike the stage: the calls to action must sit above the fold
+     even with the URL bar showing. */
+  min-height: 100svh;
+  pointer-events: auto;
+
+  /* The scroll fade is an inline style. A page printed mid-journey still
+     needs its headline. */
+  @media print {
+    opacity: 1 !important;
+  }
+}
+
+/* Page colour behind the hero text, so it holds its contrast over the
+   scene in both themes. One flat colour shaped by a mask: strongest where
+   the copy is, gone where the desk is.
+
+   Both shapes are fully transparent along the bottom edge. The text
+   scrolls away over a pinned stage, so that edge travels up the viewport,
+   and anything left on it would show as a seam crossing the scene. */
+@utility hero-scrim {
+  background-color: var(--background);
+  opacity: 0.85;
+  /* Tall screens: the copy runs down from the top, over the desk. */
+  mask-image: linear-gradient(
+    to bottom,
+    #000,
+    rgba(0, 0, 0, 0.65) 50%,
+    transparent
+  );
+
+  /* Wide screens: the copy is on the left of the page's centred column
+     (72rem wide, 1.5rem gutters), so the shape is anchored to that column
+     and not to the edge of the viewport. On an ultrawide the two are far
+     apart. */
+  @media (orientation: landscape) {
+    mask-image: radial-gradient(
+      ellipse min(38rem, 50%) 58% at
+        calc(max(1.5rem, (100% - 72rem) / 2) + min(18rem, 24%)) 42%,
+      #000,
+      rgba(0, 0, 0, 0.65) 45%,
+      transparent
+    );
+  }
+
+  @media print {
+    display: none;
+  }
+}
+
+/* The hero's poster: a sky glow where the desk scene sits, an emerald one
+   beneath it, and a faint grid that fades out around them. It is in the
+   server HTML, so it is what the stage shows until the scene has loaded,
+   and all it shows on a device with no WebGL.
+
+   The glow follows the scene's opening frame, so the two line up when the
+   canvas fades in over it. Coloured light on white has nothing to contrast
+   with, so light mode keeps about half the strength.
+
+   The two colours are the theme's sky and the mint accent, written out
+   with their alpha like the space-layer tokens above. A `color-mix()` of
+   the tokens would read better, but the fallback Tailwind emits for it is
+   the colour at full strength, and a poster is the wrong place to find
+   that out. */
+@utility hero-poster {
+  /* Tall screens: the desk is a band across the width, a little below
+     the middle, under the headline. */
+  --poster-x: 50%;
+  --poster-y: 62%;
+  --poster-w: 70%;
+  --poster-h: 26%;
+  --poster-sky: rgba(2, 132, 199, 0.11);
+  --poster-mint: rgba(16, 185, 129, 0.07);
+
+  background-image:
+    radial-gradient(
+      ellipse var(--poster-w) var(--poster-h) at var(--poster-x) var(--poster-y),
+      var(--poster-sky),
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse calc(var(--poster-w) * 0.8) calc(var(--poster-h) * 0.8) at
+        calc(var(--poster-x) + 10%) calc(var(--poster-y) + 20%),
+      var(--poster-mint),
+      transparent 72%
+    );
+
+  /* Wide screens: the desk sits right of the text. The scene slides it
+     over by a third of the stage's height and sizes it by height too, so
+     these are in lvh and the glow stays behind the desk from a laptop to
+     an ultrawide. */
+  @media (orientation: landscape) {
+    --poster-x: calc(50% + 34lvh);
+    --poster-y: 50%;
+    --poster-w: 62lvh;
+    --poster-h: 46lvh;
+  }
+
+  .dark & {
+    --poster-sky: rgba(56, 189, 248, 0.2);
+    --poster-mint: rgba(16, 185, 129, 0.12);
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(to right, var(--border) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+    background-size: 3.5rem 3.5rem;
+    /* The grid belongs to the glow, not the page: it is gone well before
+       the stage's edges, so no line ever ends at a hard border. */
+    mask-image: radial-gradient(
+      ellipse calc(var(--poster-w) * 1.35) calc(var(--poster-h) * 1.35) at
+        var(--poster-x) var(--poster-y),
+      #000 15%,
+      transparent 75%
+    );
+  }
+}
+
 /* Never let a reveal animation strand content off-screen for reduced-motion users. */
 @media (prefers-reduced-motion: reduce) {
-  .section-reveal {
-    opacity: 1;
-    transform: none;
-    transition: none;
+  .load-rise,
+  .load-word,
+  .load-rule,
+  .load-iris,
+  .load-settle,
+  .rail-fill {
+    animation: none;
   }
 
   .animate-float,
@@ -475,6 +953,19 @@ body {
   .parallax-scene {
     transform: none;
   }
+
+  .btn-shine::after {
+    display: none;
+  }
+
+  /* The ring still appears on hover; it just holds still. */
+  .glow-border:hover::before {
+    animation: none;
+  }
+
+  .scroll-progress {
+    display: none;
+  }
 }
 
 /* Print: /resume must come out of Ctrl+P as a clean, ATS-readable document. */
@@ -493,7 +984,7 @@ body {
     --text-dim: #1a1a1a;
     --muted: #444444;
     --border: #cccccc;
-    --gold: #7a6420;
+    --primary: #0369a1;
   }
 
   body {
@@ -501,9 +992,16 @@ body {
     color: #000000 !important;
   }
 
-  .section-reveal {
+  /* Motion entrances hold unrevealed content at opacity 0 with inline
+     styles; !important beats inline, so a printout includes every section,
+     not just the ones scrolled past. */
+  [data-reveal-motion] {
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  .grain {
+    display: none;
   }
 
   a[href^="http"]::after {

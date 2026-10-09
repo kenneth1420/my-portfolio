@@ -1,57 +1,89 @@
 "use client";
 
-import ScrollReveal from "../ui/ScrollReveal";
-import SpotlightCard from "../ui/SpotlightCard";
-import TiltCard from "../ui/TiltCard";
-import { skillGroups } from "@/src/data/resume";
-
+import { AnimatePresence, motion } from "motion/react";
+import SectionHeading from "../ui/SectionHeading";
+import { Reveal } from "../ui/Reveal";
+import SkillChip from "./skills/SkillChip";
+import { useSkillMatrix } from "@/src/hook/use.skill.matrix.hook";
 
 export default function Skills() {
-  return (
-    <section id="skills" className="py-24 px-6 bg-surface/50">
-      <div className="max-w-6xl mx-auto">
-        <ScrollReveal className="mb-16">
-          <p className="text-gold font-mono text-sm tracking-widest mb-3">
-            02. SKILLS
-          </p>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-text">
-            Tech Stack
-          </h2>
-        </ScrollReveal>
+  const {
+    filters,
+    activeFilter,
+    visibleSkills,
+    openSkill,
+    handleFilterChange,
+    handleSkillOpen,
+    handleSkillClose,
+  } = useSkillMatrix();
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {skillGroups.map((group, i) => (
-            <ScrollReveal key={group.category} delay={i * 100} className="h-full">
-              {/* Chrome moves onto the tilting surface so the hover border and
-                  shadow travel with the tilt; SpotlightCard keeps the cursor light. */}
-              <TiltCard
-                className="bg-card border border-border rounded-2xl"
-                max={3}
-              >
-                <SpotlightCard className="h-full rounded-2xl p-8">
-                  <div className="flex items-center gap-3 mb-6">
-                    <span className="font-mono text-gold text-lg">
-                      {group.icon}
-                    </span>
-                    <h3 className="font-display text-lg font-semibold text-text">
-                      {group.category}
-                    </h3>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {group.skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="px-3 py-1.5 rounded-lg bg-subtle border border-border text-text-dim text-sm font-mono hover:border-gold/40 hover:text-gold transition-all duration-200 cursor-default"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </SpotlightCard>
-              </TiltCard>
-            </ScrollReveal>
-          ))}
-        </div>
+  return (
+    <section id="skills" className="py-28 px-6 bg-surface/40">
+      <div className="max-w-6xl mx-auto">
+        <SectionHeading
+          index="04"
+          eyebrow="Skills"
+          title="Tech"
+          accent="stack"
+          className="mb-12"
+        >
+          <p className="text-text-dim mt-5 max-w-xl">
+            Filter by discipline. Hover, focus, or tap a skill to see how long
+            I&apos;ve used it and what I built with it.
+          </p>
+        </SectionHeading>
+
+        <Reveal>
+          <div role="group" aria-label="Filter skills by discipline" className="flex flex-wrap gap-2 mb-8">
+            {filters.map((filter) => {
+              const isActive = filter.id === activeFilter;
+              return (
+                <button
+                  key={filter.id}
+                  type="button"
+                  aria-pressed={isActive}
+                  onClick={() => handleFilterChange(filter.id)}
+                  className={`px-4 py-2 rounded-full border text-xs font-mono transition-[background-color,border-color,color] duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-strong ${
+                    isActive
+                      ? "bg-primary/15 border-primary/50 text-primary-strong"
+                      : "bg-subtle/70 border-border text-text-dim hover:border-primary/40 hover:text-primary-strong"
+                  }`}
+                >
+                  {filter.label}{" "}
+                  <span className="ml-0.5 tabular-nums">
+                    {filter.count}
+                    <span className="sr-only"> skills</span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* `initial={false}` keeps the first render un-animated, so the
+              chips are in the server HTML at full opacity. After that, chips
+              leaving a filter shrink out and the rest glide into the gaps. */}
+          <ul className="flex flex-wrap gap-2 min-h-40 content-start">
+            <AnimatePresence initial={false} mode="popLayout">
+              {visibleSkills.map((skill) => (
+                <motion.li
+                  key={skill.name}
+                  layout
+                  initial={{ opacity: 0, scale: 0.85 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.85 }}
+                  transition={{ duration: 0.25 }}
+                >
+                  <SkillChip
+                    skill={skill}
+                    isOpen={openSkill === skill.name}
+                    onOpen={handleSkillOpen}
+                    onClose={handleSkillClose}
+                  />
+                </motion.li>
+              ))}
+            </AnimatePresence>
+          </ul>
+        </Reveal>
       </div>
     </section>
   );

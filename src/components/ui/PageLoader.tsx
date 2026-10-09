@@ -33,21 +33,17 @@ export default function PageLoader({
           ${loading ? "opacity-100" : "opacity-0 pointer-events-none"}
         `}
       >
-        <div className="flex flex-col items-center gap-4">
-          <div
-            className="
-              w-10 h-10
-              border-4
-              border-foreground
-              border-t-transparent
-              rounded-full
-              animate-spin
-              motion-reduce:animate-none
-            "
-          />
-
-          <p className="text-sm tracking-widest opacity-70">
-            Loading Portfolio...
+        {/* The monogram is the first thing anyone sees, so it carries the
+            brand rather than a generic spinner. */}
+        <div className="flex flex-col items-center gap-5">
+          <span className="font-serif italic text-6xl text-primary-gradient pr-2 animate-pulse motion-reduce:animate-none">
+            KL
+          </span>
+          <span className="relative block h-px w-28 overflow-hidden bg-border">
+            <span className="animate-loader-fill absolute inset-0 origin-left bg-gradient-to-r from-primary to-primary-light" />
+          </span>
+          <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-muted">
+            Kenneth Lariosa
           </p>
         </div>
       </div>

@@ -9,7 +9,7 @@ import { useScrollMetrics } from "@/src/hook/use.scroll.metrics.hook";
 
 /**
  * A minimalist space layer behind the whole page: three parallaxing starfields,
- * two slow gold nebulae, and a soft atmosphere along the bottom edge.
+ * two slow sky-blue nebulae, and a soft atmosphere along the bottom edge.
  *
  * Every layer answers to both scroll and cursor, moving further the nearer it
  * is meant to read. Two independent hooks publish the inputs — scroll on the
@@ -143,7 +143,7 @@ export default function DepthBackground() {
       {/* Atmosphere: a wide, shallow glow hugging the bottom edge, standing in
           for a horizon so the starfield has something to sit above. Deliberately
           fixed — a horizon that slid with the cursor would break the illusion. */}
-      <div className="absolute -bottom-40 left-1/2 -translate-x-1/2 w-[140%] h-80 rounded-[50%] bg-gold/5 dark:bg-gold/8 blur-[90px]" />
+      <div className="absolute -bottom-40 left-1/2 -translate-x-1/2 w-[140%] h-80 rounded-[50%] bg-primary/5 dark:bg-primary/8 blur-[90px]" />
     </div>
   );
 }

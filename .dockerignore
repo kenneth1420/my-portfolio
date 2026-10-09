@@ -1,0 +1,26 @@
+node_modules
+.next
+.git
+.gitignore
+.github
+
+# local env / secrets — never bake these into an image
+.env
+.env.*
+!.env.example
+
+# editor + OS noise
+.DS_Store
+.vscode
+.idea
+*.log
+npm-debug.log*
+yarn-error.log
+
+# docs and container files are not build inputs
+README.md
+AGENTS.md
+CLAUDE.md
+Dockerfile
+.dockerignore
+compose.yaml

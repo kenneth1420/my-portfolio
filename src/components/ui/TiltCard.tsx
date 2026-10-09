@@ -13,11 +13,11 @@ interface TiltCardProps {
 
 /**
  * Gives a card a small perspective tilt toward the cursor, plus a lift and a
- * deeper shadow on hover. Composes around existing cards — including
- * `SpotlightCard` — rather than replacing them.
+ * deeper shadow on hover. Composes around existing cards rather than
+ * replacing them.
  *
- * Keep this a child of any `section-reveal` element, never the same node: the
- * reveal animates `transform` too, and the two would overwrite each other.
+ * Keep this a child of any `Reveal` / `StaggerItem`, never the same node:
+ * the entrance animates `transform` too, and the two would overwrite each other.
  */
 export default function TiltCard({
   children,

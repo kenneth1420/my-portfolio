@@ -1,7 +1,11 @@
+import { totalProjects } from "./resume";
+
 export const site = {
   name: "Kenneth Lariosa",
   initials: "KL",
-  role: "Full Stack Developer",
+  role: "Mid-to-Senior Full-Stack Engineer",
+  tagline:
+    "Building robust enterprise systems & scalable multi-tenant architectures with ASP.NET Core, React, TypeScript, and PostgreSQL.",
   url: "https://kennethlariosa.vercel.app",
   location: {
     city: "Davao City",
@@ -22,11 +26,46 @@ export const site = {
     "I'm looking for a role where I can help build meaningful products, grow with new technologies, and make a positive impact through clean, maintainable, and thoughtful code.",
 } as const;
 
-export const seoDescription =
-  "Full Stack Developer in Davao City, Philippines with 7+ years building web and mobile applications across C#/ASP.NET Core, React, and React Native. 17 delivered projects spanning ERP, CRM, healthcare, and government systems.";
+/** Headline figures, shared by the hero proof strip and the About stats. */
+export const stats = [
+  { value: site.yearsExperience, suffix: "+", label: "Years Experience" },
+  { value: totalProjects, suffix: "", label: "Projects Delivered" },
+  { value: 5, suffix: "", label: "Companies Served" },
+  { value: 3, suffix: "", label: "Tech Stacks" },
+] as const;
+
+/**
+ * The hero's metrics row. `unit` is the word that scrambles in beside the
+ * counting figure; `detail` is an optional qualifier beneath the label.
+ */
+export const heroStats = [
+  {
+    value: 180,
+    suffix: "+",
+    unit: "Files",
+    label: "React / TS Frontend Files Built",
+  },
+  {
+    value: 133,
+    suffix: "",
+    unit: "Endpoints",
+    label: "API Endpoints",
+    detail: "& Multi-Tenant RLS",
+  },
+  {
+    value: 128,
+    suffix: "",
+    unit: "Tests",
+    label: "Integration Tests Passed",
+  },
+] as const;
+
+export const seoDescription = `${site.role} in Davao City, Philippines with ${site.yearsExperience}+ years building enterprise systems and multi-tenant platforms across ASP.NET Core, React, TypeScript, and PostgreSQL. ${totalProjects} delivered projects spanning ERP, CRM, healthcare, and government systems.`;
 
 export const seoKeywords = [
   "Kenneth Lariosa",
+  "Mid-to-Senior Full-Stack Engineer",
+  "Full Stack Engineer",
   "Full Stack Developer",
   "Software Engineer",
   "Davao City",

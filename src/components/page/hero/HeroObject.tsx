@@ -8,12 +8,12 @@ import type { CSSProperties } from "react";
  * flat rings.
  */
 const ORBITS = [
-  { inset: "0.5rem", transform: "rotateY(74deg)", tone: "border-gold/15" },
-  { inset: "2.75rem", transform: "rotateX(18deg) rotateZ(28deg)", tone: "border-gold/20" },
+  { inset: "0.5rem", transform: "rotateY(74deg)", tone: "border-primary/15" },
+  { inset: "2.75rem", transform: "rotateX(18deg) rotateZ(28deg)", tone: "border-primary/20" },
 ];
 
 /**
- * The hero's 3D element: a slow gold gyroscope behind the portrait. Built from
+ * The hero's 3D element: a slow sky-blue gyroscope behind the portrait. Built from
  * CSS 3D transforms rather than a WebGL scene — the page already runs an ogl
  * shader for the aurora, and a second context here would cost far more than
  * this effect is worth.
@@ -32,7 +32,7 @@ export default function HeroObject() {
     >
       {/* Soft key light. Reads as the source for the rings' highlights and
           keeps the portrait separated from the background. */}
-      <div className="absolute inset-8 rounded-full bg-gold/10 blur-3xl" />
+      <div className="absolute inset-8 rounded-full bg-primary/10 blur-3xl" />
 
       <div className="perspective-card absolute inset-0">
         <div
@@ -47,10 +47,10 @@ export default function HeroObject() {
           {/* Near-horizontal plane. On its own a circle spinning about its own
               axis looks static, so it carries the satellite that shows motion. */}
           <div
-            className="absolute rounded-full border border-gold/25"
+            className="absolute rounded-full border border-primary/25"
             style={{ inset: "1.5rem", transform: "rotateX(76deg)" }}
           >
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-gold shadow-[0_0_12px_2px] shadow-gold/40" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_12px_2px] shadow-primary/40" />
           </div>
 
           {ORBITS.map((orbit) => (
@@ -65,7 +65,7 @@ export default function HeroObject() {
 
       {/* Kept from the original hero: the steady outer ring that frames the
           portrait while the rig turns inside it. */}
-      <div className="absolute inset-6 rounded-full border border-gold/10 animate-float" />
+      <div className="absolute inset-6 rounded-full border border-primary/10 animate-float" />
     </div>
   );
 }

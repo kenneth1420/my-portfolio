@@ -15,7 +15,7 @@ const config: Config = {
         "text-dim": "var(--color-text-dim)",
         border: "var(--color-border)",
         muted: "var(--color-muted)",
-        gold: "var(--color-gold)",
+        primary: "var(--color-primary)",
         subtle: "var(--color-subtle)",
         card: "var(--color-card)",
       },

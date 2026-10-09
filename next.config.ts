@@ -13,7 +13,8 @@ const nextConfig: NextConfig = {
     optimizePackageImports: [
       "lucide-react",
       "react-icons",
-      "framer-motion",
+      "motion",
+      "@react-three/drei",
       "@radix-ui/react-icons",
     ],
   },
