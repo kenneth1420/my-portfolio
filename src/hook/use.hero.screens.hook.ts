@@ -179,7 +179,7 @@ interface IScreensFrame {
 }
 
 /**
- * One render-loop step for the two screens. A plain function, as in the wave
+ * One render-loop step for the two screens. A plain function, as in the star
  * field hook: it mutates uniforms and textures the hook owns, which the
  * React Compiler lint rules forbid inside the hook body itself.
  *

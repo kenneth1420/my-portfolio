@@ -163,7 +163,7 @@ function reportFrame({ rig, camera, group, gl }: IRigFrame) {
 }
 
 /**
- * One render-loop step for the camera. A plain function, as in the wave
+ * One render-loop step for the camera. A plain function, as in the star
  * field hook: it mutates the camera, the room group and the canvas element,
  * which the React Compiler lint rules forbid inside the hook body itself.
  */

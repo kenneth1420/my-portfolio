@@ -755,8 +755,10 @@ export const heroRig = {
   parallax: { pivot: [0, 0.9, 0], yaw: 0.07, pitch: 0.035, rate: 4, fade: [0.25, 0.5] },
   /** The terminal's text dissolves into its paper across this range. */
   inkFade: [0.6, 0.8],
-  /** Then the canvas itself fades, uncovering the page behind it. */
-  canvasFade: [0.8, 0.94],
+  /** Then the canvas itself fades, uncovering the page behind it. The next
+      section's heading is on screen by now (see `hero-track` in
+      `globals.css`), so the frame is never blank paper for long. */
+  canvasFade: [0.76, 0.9],
   /** Past this the terminal texture is left alone: it is filling the frame
       and about to dissolve, so a repaint would only cost a hitch. */
   repaintLimit: 0.6,

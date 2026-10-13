@@ -150,7 +150,7 @@ export function useHeroJourney() {
     return () => {
       observer.disconnect();
       window.removeEventListener("scroll", read);
-      // No hero on the page: the wave backdrop must not wait for one.
+      // No hero on the page: the sky backdrop must not wait for one.
       setStage(null);
     };
   }, [progress, overlayExit, setStage]);

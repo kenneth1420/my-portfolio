@@ -125,7 +125,7 @@ export const heroJourney = {
    */
   stageEdges: {
     zoom: [0.1, 0.07],
-    handoff: [0.76, 0.72],
+    handoff: [0.7, 0.66],
     past: [1, 0.97],
   },
   /** The overlay fades over this fraction of a viewport as its bottom edge
@@ -137,7 +137,7 @@ export const heroJourney = {
   /** The CSS poster behind the canvas fades out across this range. */
   backdropFade: [0.55, 0.8],
   /** The HTML terminal that stands in for stage 2 when the scene is off. */
-  terminalFallback: { in: [0.3, 0.45], out: [0.62, 0.78] },
+  terminalFallback: { in: [0.3, 0.45], out: [0.6, 0.76] },
   mount: {
     /** The canvas mounts once the track is within a viewport of the screen. */
     rootMargin: "100% 0px",
@@ -151,11 +151,11 @@ export const heroJourney = {
 
 /**
  * The hand-over between the two canvases. While the hero's desk scene is in
- * front of the wave backdrop, the wave stops drawing and fades out; it comes
+ * front of the sky backdrop, the sky stops drawing and fades out; it comes
  * back as the camera reaches the screen.
  */
 export const heroWaveRelay = {
-  /** How long the wave takes to fade out behind the hero, and to fade back
+  /** How long the sky takes to fade out behind the hero, and to fade back
       in at the hand-off, in milliseconds. */
   fadeMs: 600,
 } as const;

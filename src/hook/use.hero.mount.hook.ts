@@ -68,7 +68,7 @@ export function useHeroMount({ isNear, scene }: IUseHeroMountOptions) {
   }, [isLingering, lingerMs]);
 
   // Ruled out at hydration rather than when the hero is next approached, so
-  // the wave backdrop never stands down for a scene that will not come.
+  // the sky backdrop never stands down for a scene that will not come.
   useEffect(() => {
     if (isHydrated && !canRun) setScene("off");
   }, [isHydrated, canRun, setScene]);

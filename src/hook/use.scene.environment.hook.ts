@@ -2,7 +2,7 @@ import { useSyncExternalStore } from "react";
 import { detectWebGL2 } from "@/src/lib/webgl";
 
 export interface ISceneEnvironment {
-  /** WebGL2 is available at all. Enough for the wave backdrop. */
+  /** WebGL2 is available at all. Enough for the sky backdrop. */
   isSupported: boolean;
   /** WebGL2 on real graphics hardware. The hero's desk scene needs this. */
   isStrictSupported: boolean;

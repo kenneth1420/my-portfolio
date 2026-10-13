@@ -5,7 +5,7 @@ const cache = new Map<boolean, boolean>();
  * True when the browser can give us a WebGL2 context, which is the only kind
  * the installed three will ask for.
  *
- * `strict` also refuses a software renderer. The wave backdrop is cheap
+ * `strict` also refuses a software renderer. The sky backdrop is cheap
  * enough to run on one; the hero's desk scene is not, so it asks strictly
  * and falls back to its poster instead.
  *

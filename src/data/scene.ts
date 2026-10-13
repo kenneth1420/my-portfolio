@@ -1,6 +1,6 @@
 /**
  * Tuning for the WebGL background in `components/scene`. Kept as data so the
- * look can be adjusted without touching the shader or the render loop.
+ * look can be adjusted without touching the shaders or the render loop.
  */
 
 export type SceneTheme = "dark" | "light";
@@ -8,66 +8,80 @@ export type SceneTheme = "dark" | "light";
 export interface IScenePalette {
   /** Painted behind the canvas. Transparent lets the page background show. */
   background: string;
-  /** Ambient light colour. Matches the backdrop so unlit nodes sink into it. */
-  ambient: string;
-  ambientIntensity: number;
-  /** Base albedo of every node before the cursor tints it. */
-  node: string;
-  /** Faint self-illumination so the fabric reads even away from the light. */
-  emissive: string;
-  emissiveIntensity: number;
-  /** The cursor light and the swell tint. */
+  /** The lit star, and the glow that follows the cursor across the field. */
   accent: string;
-  pointIntensity: number;
-  /** Peak opacity of the nearest rows; far rows fade from here to zero. */
-  opacity: number;
+  /** The three star colours; each star is given one. */
+  stars: readonly [string, string, string];
+  /** Peak opacity of a globe star on the near side; far-side stars fade. */
+  starOpacity: number;
+  /** The globe's links. */
+  line: string;
+  lineOpacity: number;
+  /** The star field behind the globe: fainter, so the globe stays the focus.
+      The cursor's glow lifts the marks under it toward full opacity. */
+  fieldStarOpacity: number;
+  fieldLineOpacity: number;
+  /** The faint star dust that fills the space around everything. */
+  dust: string;
+  dustOpacity: number;
+  /** Additive blending, so crossing links brighten. Only on a dark backdrop:
+      on white it would wash the marks out instead. */
+  additive: boolean;
 }
 
 export const scenePalettes: Record<SceneTheme, IScenePalette> = {
   dark: {
     background: "#090d16",
-    ambient: "#090d16",
-    ambientIntensity: 1,
-    node: "#64748b",
-    emissive: "#1e293b",
-    emissiveIntensity: 0.55,
     accent: "#10b981",
-    pointIntensity: 26,
-    opacity: 0.95,
+    stars: ["#f0f9ff", "#38bdf8", "#2dd4bf"],
+    starOpacity: 0.95,
+    line: "#38bdf8",
+    lineOpacity: 0.42,
+    fieldStarOpacity: 0.9,
+    fieldLineOpacity: 0.14,
+    dust: "#64748b",
+    dustOpacity: 0.6,
+    additive: true,
   },
-  // On white, light-coloured nodes would vanish, so the light theme keeps the
-  // same slate-black ambient and lets the nodes read as ink. The cursor tint
-  // still turns them mint.
+  // Sky ink: on white the constellations are the only marks with colours of
+  // their own, so they read as a chart drawn over the page. Low field
+  // opacities on purpose: dark marks on white compete with body copy far
+  // more than lit marks on black.
   light: {
     background: "transparent",
-    ambient: "#090d16",
-    ambientIntensity: 1,
-    node: "#334155",
-    emissive: "#000000",
-    emissiveIntensity: 0,
     accent: "#10b981",
-    pointIntensity: 18,
-    // Low on purpose: dark specks on white compete with body copy far more
-    // than lit specks on black. The shader restores opacity under the cursor.
-    opacity: 0.16,
+    stars: ["#0c4a6e", "#0284c7", "#0d9488"],
+    starOpacity: 0.85,
+    line: "#0284c7",
+    lineOpacity: 0.36,
+    fieldStarOpacity: 0.6,
+    fieldLineOpacity: 0.12,
+    dust: "#94a3b8",
+    dustOpacity: 0.55,
+    additive: false,
   },
 };
 
 export interface ISceneDensity {
-  cols: number;
-  rows: number;
   /** Device-pixel-ratio ceiling. The performance monitor scales below it. */
   maxDpr: number;
+  /** Nodes in the constellation globe. */
+  stars: number;
+  /** Stars in the field, per square world unit of its face. */
+  fieldDensity: number;
+  /** Specks of star dust. */
+  dust: number;
 }
 
 /**
- * Touch devices get roughly a third of the nodes and a lower DPR ceiling.
- * They are the ones most likely to be thermally limited, and a phone's
- * smaller viewport shows less of the fabric anyway.
+ * Touch devices get fewer background stars and a lower DPR ceiling. They are
+ * the ones most likely to be thermally limited, and a phone's smaller
+ * viewport shows less of the sky anyway. The globe keeps all 88 nodes: it is
+ * the centrepiece, and one instanced draw costs the same either way.
  */
 export const sceneDensity: Record<"fine" | "coarse", ISceneDensity> = {
-  fine: { cols: 96, rows: 48, maxDpr: 1.5 },
-  coarse: { cols: 44, rows: 34, maxDpr: 1.25 },
+  fine: { maxDpr: 1.5, stars: 88, fieldDensity: 0.335, dust: 1200 },
+  coarse: { maxDpr: 1.25, stars: 88, fieldDensity: 0.28, dust: 600 },
 };
 
 /** Lowest DPR the performance monitor may drop to before it stops scaling. */
@@ -79,32 +93,117 @@ export const sceneCamera = {
   fov: 50,
 };
 
-/** Shape of the fabric and of the cursor's influence on it, in world units. */
-export const sceneField = {
-  /** Fabric depth along z. The width is derived from the viewport aspect. */
-  depth: 22,
-  /** Half-width per unit of aspect ratio, clamped so phones and ultrawides
-      both get a sensible spread from the same fixed node count. */
-  widthPerAspect: 11,
-  minHalfWidth: 6,
-  maxHalfWidth: 24,
-  /** Pushes the fabric back so its near edge sits just below the viewport. */
-  offsetZ: -5,
-  nodeSize: 0.038,
-  amplitude: 0.55,
-  /** Wave speed multiplier. Ignored under reduced motion, which freezes time. */
-  speed: 1,
-  radius: 2.8,
-  lift: 0.55,
-  push: 0.35,
-  swell: 0.75,
-  glow: 1.5,
-  /** Height of the point light above the cursor's spot on the fabric. */
-  lightHeight: 2.2,
-  lightDistance: 9,
-  /** Swell strength while no pointer is present, so the fabric is never inert. */
+/**
+ * The star field: a deep layer of stars behind the globe, facing the camera
+ * and filling the viewport. Links are capped by distance, so the stars
+ * gather into separate figures rather than one web.
+ */
+export const sceneStarField = {
+  /** How far behind the camera's target the field's middle sits: far enough
+      that the globe never reaches into it. */
+  back: 11,
+  /** Half the field's height, in world units: a margin past the viewport's
+      edges, so the tilt never brings an edge into view. */
+  halfHeight: 12.7,
+  /** The half-width follows the viewport's aspect ratio, within these. */
+  minHalfWidth: 8,
+  maxHalfWidth: 35,
+  /** Half the field's depth, along the view. */
+  halfDepth: 3.35,
+  /** Links per star, at most, and the furthest two stars may be apart. */
+  neighbours: 2,
+  maxLink: 2.15,
+  /** Star sizes, as multiples of `starSize`; most land near the low end. */
+  sizeRange: [0.5, 1.6] as const,
+  tintWeights: [0.5, 0.35, 0.15] as const,
+  seed: 7,
+  /** Star size, in pixels at one world unit from the camera. */
+  starSize: 228,
+  /** Opacity kept by the furthest stars. */
+  depthFade: 0.35,
+  /** Twinkle cycles, in radians per second. */
+  twinkleRate: 0.7,
+  /** Lean toward the cursor at the screen's edge, in radians. */
+  tilt: 0.06,
+  tiltRate: 1.5,
+  /** The cursor's glow: its radius in CSS pixels, its strength while no
+      pointer is present (so the field is never inert), and easing rates per
+      second for its position and strength. */
+  glowRadius: 220,
   idleStrength: 0.35,
-  /** Exponential easing rates, per second. Higher snaps faster. */
   followRate: 6,
   strengthRate: 3,
-};
+} as const;
+
+/**
+ * The constellation globe: 88 glowing stars spread evenly over a sphere,
+ * centred on screen and a little taller than it, each linked by a solid line
+ * to its nearest neighbours. It turns slowly and leans a little toward the
+ * cursor.
+ *
+ * Every mouse move reshapes it: stars near the cursor are swept along its
+ * path, and the links are re-formed every frame to whichever stars are now
+ * nearest, so the figures themselves change. When the mouse stops, springs
+ * draw the stars home and the original figures re-form.
+ */
+export const sceneConstellation = {
+  /** Globe radius, in world units: just over half the viewport's height. */
+  radius: 6.8,
+  /** Centre, in world space: the camera's target, the middle of the screen. */
+  center: [0, 0, -3] as const,
+  /** Below this viewport aspect ratio the globe shrinks in step, so a
+      portrait phone is not lost inside it. */
+  minAspect: 0.9,
+  /** Links per star, to its nearest neighbours. Shared links are drawn once. */
+  neighbours: 3,
+  /** Random offset from the even spread, as a share of the radius, so the
+      stars read as a sky rather than a mesh. */
+  jitter: 0.07,
+  /** Fixes the jitter and the colours, so the sky is the same on every load. */
+  seed: 88,
+  /** How often each of the palette's three colours is picked. */
+  tintWeights: [0.45, 0.35, 0.2] as const,
+  /** Star size, in pixels at one world unit from the camera. */
+  starSize: 220,
+  /** What marks on the far side of the globe keep of their size and opacity. */
+  backFade: 0.22,
+  /** Twinkle cycles, in radians per second. */
+  twinkleRate: 0.9,
+  /** Constant spin, radians per second, about x and y. */
+  spin: [0.02, 0.04] as const,
+  /** Lean toward the cursor at the screen's edge, in radians. */
+  tilt: 0.25,
+  tiltRate: 2.5,
+  /** The sweep: how close to the cursor a star must be to be moved, in CSS
+      pixels, and how much of the cursor's movement a star right under it
+      takes. `carry` moves it along at once; `fling` sends it on with some of
+      the cursor's speed, so a quick flick throws the stars further. */
+  sweepRadius: 190,
+  carry: 0.55,
+  fling: 0.35,
+  /** The spring that draws a swept star home, per second squared and per
+      second: slightly under-damped, so it settles with a soft overshoot. */
+  stiffness: 6,
+  damping: 3.6,
+  /** Furthest a star may be swept from home, in world units. */
+  maxOffset: 2.6,
+  /** A star swept this far, in world units, glows at full strength. */
+  glowAt: 0.9,
+} as const;
+
+/**
+ * Star dust: specks scattered through a cube that surrounds the camera,
+ * unlinked and faint, drifting slowly the other way from the globe's spin.
+ */
+export const sceneStarDust = {
+  /** Half the cube's side, in world units, around the camera's target. */
+  halfExtent: 28,
+  /** Speck size, in pixels at one world unit from the camera, and its range
+      on screen in CSS pixels, so near specks never balloon. */
+  size: 38,
+  minPixels: 1,
+  maxPixels: 2.5,
+  /** Drift about the vertical axis, in radians per second. */
+  drift: -0.01,
+  seed: 1200,
+} as const;

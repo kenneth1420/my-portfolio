@@ -6,7 +6,7 @@ import SceneErrorBoundary from "../../scene/SceneErrorBoundary";
 import type { HeroSceneStatus } from "@/src/data/hero";
 import { useHeroMount } from "@/src/hook/use.hero.mount.hook";
 
-// Client-only and in its own chunk, like the wave backdrop: three and R3F
+// Client-only and in its own chunk, like the sky backdrop: three and R3F
 // never reach the server or the first-load bundle. In Next 16 `ssr: false`
 // is only allowed inside a Client Component, which is why this file is one.
 const HeroScene = dynamic(() => import("../../scene/HeroScene"), {

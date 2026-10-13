@@ -19,13 +19,13 @@ import { useSceneEnvironment } from "./use.scene.environment.hook";
 const roundDpr = (value: number) => Math.round(value * 100) / 100;
 
 /**
- * True while the hero is in front of the wave: its desk scene, or the poster
- * that stands in until the scene has loaded. The wave has nothing to show
+ * True while the hero is in front of the sky: its desk scene, or the poster
+ * that stands in until the scene has loaded. The sky has nothing to show
  * then, so it can stop drawing.
  *
  * It fails open. A hero that has not reported a stage yet, one with no
  * scroll journey (`static`), and one whose scene has been given up on all
- * leave the wave running, because in each case the wave is the backdrop the
+ * leave the sky running, because in each case the sky is the backdrop the
  * reader actually sees.
  */
 function isCoveredByHero(stage: HeroStage | null, scene: HeroSceneStatus) {
@@ -98,7 +98,7 @@ export function useSceneCanvas() {
     // On demand the canvas draws only when something asks it to. Under
     // reduced motion that is the one still pose; behind the hero it is
     // nothing at all, which leaves the GPU to the desk scene. The first
-    // frame is still drawn at mount, so the wave's shader compiles under
+    // frame is still drawn at mount, so the sky's shaders compile under
     // the splash and not at the hand-off.
     frameloop:
       reducedMotion || isCovered ? ("demand" as const) : ("always" as const),

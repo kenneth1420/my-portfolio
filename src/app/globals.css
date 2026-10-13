@@ -751,14 +751,17 @@ body {
        length mid-scroll. */
     height: var(--hero-track, 300lvh);
     /* Pulls the next section up over the end of the track. It enters the
-       viewport at 80% of the journey, while the canvas is fading out. */
-    margin-bottom: calc(var(--hero-overlap, 40lvh) * -1);
+       viewport at 68% of the journey, as the screen's paper fills the
+       frame, so its heading has cleared the dock by the time the
+       terminal's text has dissolved. Any later and the reader scrolls
+       through a screen of blank paper. */
+    margin-bottom: calc(var(--hero-overlap, 64lvh) * -1);
   }
 
-  /* Touch gets a shorter journey: less thumb travel, same 80% entry. */
+  /* Touch gets a shorter journey: less thumb travel, same 68% entry. */
   @media (pointer: coarse) {
     --hero-track: 250lvh;
-    --hero-overlap: 30lvh;
+    --hero-overlap: 48lvh;
   }
 
   @media print {
@@ -771,7 +774,7 @@ body {
   grid-area: 1 / 1;
   align-self: stretch;
   position: relative;
-  /* The negative layer of the page's z-10 container: above the wave
+  /* The negative layer of the page's z-10 container: above the sky
      backdrop, below every section's in-flow content. The next section
      paints over the pinned stage without knowing it is there. */
   z-index: -10;

@@ -5,22 +5,25 @@ import { Canvas } from "@react-three/fiber";
 import { motion } from "motion/react";
 import { sceneCamera } from "@/src/data/scene";
 import { useSceneCanvas } from "@/src/hook/use.scene.canvas.hook";
-import WaveField from "./WaveField";
+import ConstellationSphere from "./ConstellationSphere";
+import StarDust from "./StarDust";
+import StarField from "./StarField";
 
 /** The site's ease-out: fast start, long settle. Matches the CSS `--ease-out`. */
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 /**
- * The fixed WebGL backdrop: an instanced wave fabric that swells and turns
- * mint under the cursor, lit by a slate-black ambient and a mint point light
- * that follows the pointer.
+ * The fixed WebGL backdrop, in three layers: faint star dust filling the
+ * space, a field of stars linked into loose figures that brightens to mint
+ * around the cursor, and in front, a constellation globe of pentagonal
+ * prisms that the cursor turns.
  *
  * It never takes input or focus. `pointer-events: none` lets every click pass
  * through to the page, and the scene tracks the pointer from `window` instead.
  * It is decorative, so it is hidden from assistive technology. When WebGL is
  * unavailable it renders only the flat backdrop colour.
  *
- * While the hero's desk scene is in front of it, the wave stands down: it
+ * While the hero's desk scene is in front of it, the sky stands down: it
  * fades out and stops drawing, so only one canvas is working at a time. The
  * `data-covered` attribute says which state it is in.
  *
@@ -47,7 +50,7 @@ export default function SceneCanvas() {
   return (
     <div
       aria-hidden="true"
-      data-scene="wave"
+      data-scene="sky"
       data-covered={isCovered}
       className="fixed inset-0 z-0 pointer-events-none transition-colors duration-500"
       style={{ backgroundColor: palette.background }}
@@ -63,7 +66,7 @@ export default function SceneCanvas() {
               the entrance above never fight over one opacity. It wraps only
               the canvas: the backdrop colour behind stays painted. `initial`
               is off so a page that loads at the top starts already covered
-              instead of flashing the wave and fading it away. */}
+              instead of flashing the sky and fading it away. */}
           <motion.div
             className="absolute inset-0"
             initial={false}
@@ -97,7 +100,7 @@ export default function SceneCanvas() {
                   after ~10s. Continuous loop only — on demand, the gaps
                   between frames would read as a GPU running at near 0 fps.
                   The monitor reads `factor` once, when it mounts: the first
-                  time that is 1, and after the hero has covered the wave it
+                  time that is 1, and after the hero has covered the sky it
                   is wherever the last monitor had got to. */}
               {frameloop === "always" && (
                 <PerformanceMonitor
@@ -105,11 +108,19 @@ export default function SceneCanvas() {
                   onChange={handlePerformanceChange}
                 />
               )}
-              <ambientLight
-                color={palette.ambient}
-                intensity={palette.ambientIntensity}
+              {/* Unlit: every mark is a shader material that colours and
+                  shades itself, so the scene needs no lights. */}
+              <StarDust
+                palette={palette}
+                density={density}
+                reducedMotion={reducedMotion}
               />
-              <WaveField
+              <StarField
+                palette={palette}
+                density={density}
+                reducedMotion={reducedMotion}
+              />
+              <ConstellationSphere
                 palette={palette}
                 density={density}
                 reducedMotion={reducedMotion}

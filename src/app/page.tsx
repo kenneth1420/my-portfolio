@@ -16,8 +16,8 @@ export default function Home() {
   return (
     <MotionProvider>
       <PageLoader>
-        {/* WebGL wave fabric fixed behind everything at z-0; the content rides
-            above it at z-10. Its mint point light follows the cursor, which
+        {/* WebGL star field fixed behind everything at z-0; the content rides
+            above it at z-10. Its mint glow follows the cursor, which
             replaces the CSS CursorGlow and DepthBackground that sat here. */}
         {/* Bottom padding keeps the floating dock clear of the footer's
             last line once the reader reaches the end. */}

@@ -22,7 +22,7 @@ interface IUiState {
  * UI state that more than one part of the page needs: the command palette is
  * opened from the dock and from the keyboard, and it can also reset the
  * CliniQo diagram before scrolling to it. The hero's stage and scene status
- * are here because two canvases coordinate through them: the wave backdrop
+ * are here because two canvases coordinate through them: the sky backdrop
  * stands down while the hero's desk scene covers it.
  *
  * Only coarse, rarely-changing values belong here. Scroll progress itself

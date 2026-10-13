@@ -40,7 +40,7 @@ const CAMERA = {
  *
  * It also reports the scene's status to the store, which is how the rest of
  * the page learns that the desk is drawing (`ready`) or has given up for the
- * session (`off`): the wave backdrop stands down for one and returns for the
+ * session (`off`): the sky backdrop stands down for one and returns for the
  * other.
  */
 export function useHeroScene() {
