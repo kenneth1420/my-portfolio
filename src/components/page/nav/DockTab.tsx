@@ -1,11 +1,13 @@
 "use client";
 
 import { motion } from "motion/react";
+import type { LucideIcon } from "lucide-react";
 import { useMagnetic } from "@/src/hook/use.magnetic.hook";
 
 interface IProps {
   href: string;
   label: string;
+  icon: LucideIcon;
   isActive: boolean;
 }
 
@@ -21,8 +23,11 @@ const PILL_SPRING = { type: "spring", stiffness: 420, damping: 34 } as const;
  * Moving the tab itself would carry the pill, whose layout animation
  * measures the tab's box, and could make the glide jitter. Neighbouring
  * tabs would also jostle.
+ *
+ * Below `sm` the tab collapses to its icon: five worded tabs plus the action
+ * buttons outgrow a phone's width. The label stays for screen readers.
  */
-export default function DockTab({ href, label, isActive }: IProps) {
+export default function DockTab({ href, label, icon: Icon, isActive }: IProps) {
   const { ref, x, y } = useMagnetic<HTMLSpanElement>({
     radius: 24,
     strength: 0.25,
@@ -33,7 +38,7 @@ export default function DockTab({ href, label, isActive }: IProps) {
     <a
       href={href}
       aria-current={isActive ? "location" : undefined}
-      className={`relative flex items-center rounded-full px-2 py-2 text-[11px] font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-strong min-[380px]:px-2.5 min-[380px]:text-xs sm:px-4 sm:text-sm ${
+      className={`relative flex size-9 items-center justify-center rounded-full text-sm font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-strong sm:size-auto sm:px-4 sm:py-2 ${
         isActive ? "text-primary-strong" : "text-text-dim hover:text-text"
       }`}
     >
@@ -45,8 +50,9 @@ export default function DockTab({ href, label, isActive }: IProps) {
           className="absolute inset-0 rounded-full bg-primary/15 ring-1 ring-inset ring-primary/30"
         />
       )}
-      <motion.span ref={ref} style={{ x, y }} className="relative inline-block">
-        {label}
+      <motion.span ref={ref} style={{ x, y }} className="relative inline-flex">
+        <Icon aria-hidden="true" size={16} className="sm:hidden" />
+        <span className="sr-only sm:not-sr-only">{label}</span>
       </motion.span>
     </a>
   );

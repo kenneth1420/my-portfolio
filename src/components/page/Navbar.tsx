@@ -3,7 +3,15 @@
 import { motion } from "motion/react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { FileText, Search } from "lucide-react";
+import {
+  Briefcase,
+  FileText,
+  FolderGit2,
+  Layers,
+  Mail,
+  Search,
+  User,
+} from "lucide-react";
 import DockTab from "./nav/DockTab";
 import ThemeToggle from "../ui/ThemeToggle";
 import { REVEAL_ATTR } from "../ui/Reveal";
@@ -18,11 +26,11 @@ import { useUiStore } from "@/src/store/ui.store";
 const CommandMenu = dynamic(() => import("./nav/CommandMenu"), { ssr: false });
 
 const tabs = [
-  { href: "#projects", label: "Projects" },
-  { href: "#about", label: "About" },
-  { href: "#experience", label: "Experience" },
-  { href: "#skills", label: "Skills" },
-  { href: "#contact", label: "Contact" },
+  { href: "#projects", label: "Projects", icon: FolderGit2 },
+  { href: "#about", label: "About", icon: User },
+  { href: "#experience", label: "Experience", icon: Briefcase },
+  { href: "#skills", label: "Skills", icon: Layers },
+  { href: "#contact", label: "Contact", icon: Mail },
 ];
 
 // Module scope keeps the array identity stable for the hook's effect.
@@ -84,6 +92,7 @@ export default function Navbar() {
                 <DockTab
                   href={tab.href}
                   label={tab.label}
+                  icon={tab.icon}
                   isActive={tab.href === `#${activeId}`}
                 />
               </li>
@@ -101,13 +110,11 @@ export default function Navbar() {
           >
             <Search aria-hidden="true" size={16} />
           </button>
-          {/* Below 380px the dock cannot fit every control, so the resume
-              link yields; the PDF stays one tap away in Contact. */}
           <Link
             href="/resume"
             aria-label="Resume"
             title="Resume"
-            className={`${ICON_BUTTON} max-[379px]:hidden`}
+            className={ICON_BUTTON}
           >
             <FileText aria-hidden="true" size={16} />
           </Link>
